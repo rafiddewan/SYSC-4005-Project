@@ -22,5 +22,3 @@ if __name__ == "__main__":
     ins2.setBuffer(0,c2w2)
     ins2.setBuffer(1,c3w3)
 
-    
-    
