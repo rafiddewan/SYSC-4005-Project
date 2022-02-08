@@ -14,18 +14,18 @@ class Buffer:
     
     def addComponent(self) -> bool:
         if self.size < self.maxSize:
-            self.size +=1
+            self.size += 1
             return True
         return False
 
     def removeComponent(self) -> bool:
         if self.size > 0:
-            self.size -=1
+            self.size -= 1
             return True
         return False
     
     def isFull(self):
-        return self.size == 2
+        return self.size == self.maxSize
 
     def getId(self):
         return self.id

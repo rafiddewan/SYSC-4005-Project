@@ -5,6 +5,7 @@ from EventType import EventType
 from InspectorEvent import InspectorEvent
 from Component import Component
 from WorkstationEvent import WorkstationEvent
+import numpy as np
 
 
 class Inspector:
@@ -26,6 +27,7 @@ class Inspector:
         self.fileName = filename
         self.numComponentsToHandle = numComponentsToHandle
         self.componentsToHandle = [None] * numComponentsToHandle # creates an empty array of length numComponentsToHandle
+        self.timeData = np.loadtxt(self.fileName) # store all of the sample data from the file
 
     def getBuffers(self):
         """Get the list of buffers this inspector has
@@ -150,7 +152,8 @@ class Inspector:
         Returns:
             float: The amount of time the inspector will take to clean the component
         """
-        return 4.0
+        index = random.randint(0, len(self.timeData)-1)
+        return self.timeData[index]
     
     def __selectComponentToClean(self) -> Component:
         """If the inspector handles more than one component, randomly select which one to clean.
@@ -161,7 +164,7 @@ class Inspector:
         if self.numComponentsToHandle == 1:
             return self.componentsToHandle[0]
         else:
-            index = random.randint(0, self.numComponentsToHandle)
+            index = random.randint(0, self.numComponentsToHandle - 1)
             return self.componentsToHandle[index]
     
     def __iterateThroughBuffers(self, componentType: Component) -> bool:
