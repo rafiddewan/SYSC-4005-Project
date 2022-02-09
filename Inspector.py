@@ -17,7 +17,7 @@ class Inspector:
             id (int): The inspector's id. In our simulation this will either be 1 or 2
             numBuffers (int): The number of buffers assigned to this inspector
             numComponentsToHandle (int): The number of components this inspector creates
-            filename (string): Name of the file that contains the inspector's cleaning time data
+            filename (string): Relative path to the file that contains the inspector's cleaning time data
         """
         self.id = id
         self.numBuffers = numBuffers

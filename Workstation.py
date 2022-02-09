@@ -1,3 +1,4 @@
+from mailbox import FormatError
 from random import randint
 from Buffer import Buffer
 from Event import Event
@@ -9,13 +10,25 @@ import numpy as np
 class WorkStation:
     
     def __init__(self, id, numBuffers, filename):
+        """Workstation constructor
+
+        Args:
+            id (int): The workstation's id. In our simulation this will either be 1, 2 or 3
+            numBuffers (int): The number of buffers assigned to this inspector
+            filename (string): Relative Path to the file that contains the workstation's service time data
+        """
         self.id = id
         self.buffers = [None] * numBuffers
         self.numProductsCreated = 0
         self.isBusy = False
         self.minutesBusy = 0
-        self.serviceTimes = np.loadtxt(self.fileName) 
-        
+        try:
+            self.serviceTimes = np.loadtxt(filename) 
+        except FileNotFoundError:
+            print(f"The following filepath is incorrect: {filename}")
+        except FormatError:
+            print(f"File must be a .dat file")
+
     def getBuffers(self):
         """Get the list of buffers this workstation has
 
