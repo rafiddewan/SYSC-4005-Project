@@ -17,6 +17,7 @@ class WorkStation:
             numBuffers (int): The number of buffers assigned to this inspector
             filename (string): Relative Path to the file that contains the workstation's service time data
         """
+        
         self.id = id
         self.buffers = [None] * numBuffers
         self.numProductsCreated = 0
@@ -35,6 +36,7 @@ class WorkStation:
         Returns:
             Buffer[]: The buffers the workstation has
         """
+
         return self.buffers
     
     def setBuffer(self, index: int, buffer: Buffer):
@@ -47,6 +49,7 @@ class WorkStation:
         Returns:
             bool : True if the buffer was successfully added
         """
+
         if(index > len(self.buffers) or index < 0):
             raise IndexError(f"Wrong index for the buffer, the max index of the buffer is {len(buffer) - 1}")
         self.buffers[index] = buffer
@@ -67,6 +70,7 @@ class WorkStation:
         Returns:
             bool: True if the workstaiton is busy, False if the workstation is not busy
         """
+
         return self.isBusy
     
     def getMinutesBusy(self) -> int:
@@ -76,6 +80,7 @@ class WorkStation:
         Returns:
             int: Total time the workstation was busy
         """
+
         return self.minutesBusy
 
     def handleInspectorDone(self, event: InspectorEvent) -> Event:
@@ -91,6 +96,7 @@ class WorkStation:
             WorkstationEvent: Return a Workstation Started Event (WS)
             None: If the workstation is busy
         """
+
         currentTime = event.getStartTime()
         startEvent = None
 
@@ -169,6 +175,7 @@ class WorkStation:
         Returns:
             float: Amount of time a workstation will take to work on a product
         """
+
         index = randint(0, len(self.serviceTimes) -1)
         return self.serviceTimes[index]
     
@@ -179,6 +186,7 @@ class WorkStation:
         Returns:
             bool: If the buffers are ready for the workstation to be in motion
         """
+
         isReady = True
         for buffer in self.buffers:
             if buffer.isEmpty():
