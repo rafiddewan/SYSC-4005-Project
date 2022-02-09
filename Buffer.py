@@ -18,7 +18,10 @@ class Buffer:
     
     def isFull(self):
         return self.size == 2
-
+    
+    def isEmpty(self):
+        return self.size == 0
+        
     def setWorkstation(self, workstation: WorkStation):
         self.workstation = workstation
 
