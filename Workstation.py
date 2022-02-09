@@ -21,4 +21,3 @@ class WorkStation:
 
     def setTimeRemaining(self, timeRemaining: int) -> None:
         self.timeRemaining = timeRemaining
-    
