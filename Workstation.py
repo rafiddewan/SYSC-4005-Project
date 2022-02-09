@@ -17,7 +17,7 @@ class WorkStation:
             numBuffers (int): The number of buffers assigned to this inspector
             filename (string): Relative Path to the file that contains the workstation's service time data
         """
-        
+
         self.id = id
         self.buffers = [None] * numBuffers
         self.numProductsCreated = 0
@@ -28,7 +28,7 @@ class WorkStation:
         except FileNotFoundError:
             print(f"The following filepath is incorrect: {filename}")
         except FormatError:
-            print(f"File must be a .dat file")
+            print(f"File has incorrect formatting, should have only floating point numbers on each line")
 
     def getBuffers(self):
         """Get the list of buffers this workstation has
