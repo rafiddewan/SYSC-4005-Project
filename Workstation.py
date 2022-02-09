@@ -4,6 +4,7 @@ from Event import Event
 from EventType import EventType
 from InspectorEvent import InspectorEvent
 from WorkstationEvent import WorkstationEvent
+import numpy as np
 
 class WorkStation:
     
@@ -13,24 +14,8 @@ class WorkStation:
         self.numProductsCreated = 0
         self.isBusy = False
         self.minutesBusy = 0
-        self.serviceTimes = self.__stripServiceTimes(filename)
-
-    def __stripServiceTimes(filename: str):
-        """
-        Strips all the service times from the file
-
-        Parameter:
-            Filename: String containing the relative path to the file containing the service times for the workstation
-        """
-        serviceTimes = []
-        try:
-            with open(filename, 'r') as file:
-                for line in file:
-                    serviceTimes.extend(map(float, line.split()))
-        except FileNotFoundError:
-            print(f"Cannot find filename: {filename}")
-        return serviceTimes 
-
+        self.serviceTimes = np.loadtxt(self.fileName) 
+        
     def getBuffers(self):
         """Get the list of buffers this workstation has
 
@@ -184,3 +169,6 @@ class WorkStation:
                 isReady = False
                 break
         return isReady
+
+if __name__ == "__main__":
+    workstation = WorkStation(1,2, "ws1.dat")
