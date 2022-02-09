@@ -152,12 +152,15 @@ class WorkStation:
         #Calculate how long it took to build the product
         prouductionTime = currentTime - event.getCreatedTime()
 
+        self.minutesBusy += prouductionTime
 
-        self.minutesBusy = prouductionTime
+        startEvent = None
 
-        productBuiltEvent = WorkstationEvent(currentTime, currentTime, EventType.WS, self.getId())
+        #Create the workstation started event only if the buffers are ready and if the workstation is free
+        if self.__buffersAreReady() and not self.getIsBusy():
+            startEvent = WorkstationEvent(currentTime, currentTime, EventType.WS, self.getId())
         
-        return productBuiltEvent
+        return startEvent
         
     def __generateRandomServiceTime(self) -> float:
         """
@@ -182,6 +185,3 @@ class WorkStation:
                 isReady = False
                 break
         return isReady
-
-if __name__ == "__main__":
-    workstation = WorkStation(1,2, "ws1.dat")
