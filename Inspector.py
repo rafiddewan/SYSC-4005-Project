@@ -24,6 +24,7 @@ class Inspector:
         self.buffers = [None] * numBuffers  # creates an empty array of length numBuffers
         self.timeBlocked = 0
         self.isBlocked = False
+        self.blockedStartTime = 0.0;
         self.fileName = filename
         self.numComponentsToHandle = numComponentsToHandle
         self.componentsToHandle = [None] * numComponentsToHandle # creates an empty array of length numComponentsToHandle
@@ -96,6 +97,8 @@ class Inspector:
         Returns:
             Event: An Inspector Done event to be added to the Simulation's future event list
         """
+        if self.isBlocked:
+            return None
         cleaningTime = self.__generateRandomCleaningTime()
         currentTime = event.getStartTime()
         componentType = self.__selectComponentToClean()
@@ -117,12 +120,13 @@ class Inspector:
             is blocked
         """
         success = self.__iterateThroughBuffers(event.getComponentType())
+        currentTime = event.getStartTime()
         if success:
-            currentTime = event.getStartTime()
             startEvent = InspectorEvent(currentTime, currentTime, EventType.IS, self.id, None)
             return startEvent
         else:
             self.isBlocked = True
+            self.blockedStartTime = currentTime
             return None
 
     def handleWorkstationStarted(self, event: WorkstationEvent) -> Event:
@@ -141,6 +145,7 @@ class Inspector:
             if success:
                 self.isBlocked = False
                 currentTime = event.getStartTime()
+                self.timeBlocked += currentTime - self.blockedStartTime
                 startEvent = InspectorEvent(currentTime, currentTime, EventType.IS, self.id, None)
                 return startEvent
         return None
