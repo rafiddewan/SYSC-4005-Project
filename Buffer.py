@@ -26,7 +26,10 @@ class Buffer:
     
     def isFull(self):
         return self.size == self.maxSize
-
+    
+    def isEmpty(self):
+        return self.size == 0
+        
     def getId(self):
         return self.id
     
