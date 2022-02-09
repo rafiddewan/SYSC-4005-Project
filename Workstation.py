@@ -1,6 +1,9 @@
 from random import randint
 from Buffer import Buffer
-
+from Event import Event
+from EventType import EventType
+from InspectorEvent import InspectorEvent
+from WorkstationEvent import WorkstationEvent
 
 class WorkStation:
     
@@ -27,6 +30,28 @@ class WorkStation:
         except FileNotFoundError:
             print(f"Cannot find filename: {filename}")
         return serviceTimes 
+
+    def getBuffers(self):
+        """Get the list of buffers this workstation has
+
+        Returns:
+            Buffer[]: The buffers the workstation has
+        """
+        return self.buffers
+    
+    def setBuffer(self, index: int, buffer: Buffer):
+        """Set a buffer to one of the items in the list of buffers
+
+        Args:
+            index (int): Where in the list the buffer should be added to
+            buffer (Buffer): Buffer to be added
+
+        Returns:
+            bool : True if the buffer was successfully added
+        """
+        if(index > len(self.buffers) or index < 0):
+            raise IndexError(f"Wrong index for the buffer, the max index of the buffer is {len(buffer) - 1}")
+        self.buffers[index] = buffer
 
     def getId(self):
         """
@@ -73,11 +98,11 @@ class WorkStation:
 
         #Create the workstation started event only if the buffers are ready and if the workstation is free
         if self.__buffersAreReady() and not self.getIsBusy():
-            startEvent = WorkStationEvent(currentTime, currentTime, EventType.WS, self.getId())
+            startEvent = WorkstationEvent(currentTime, currentTime, EventType.WS, self.getId())
         
         return startEvent
 
-    def handleWorkstationStarted(self, event: WorkstationEvent) -> event:
+    def handleWorkstationStarted(self, event: WorkstationEvent) -> Event:
         """
         Handles Workstation Started event
 
@@ -108,7 +133,7 @@ class WorkStation:
         productBuilt = WorkstationEvent(currentTime, currentTime + randomServiceTime, EventType.WD, self.getId())
         return productBuilt
 
-    def handleProductBuilt(self, event: WorkstationEvent) -> event:
+    def handleProductBuilt(self, event: WorkstationEvent) -> Event:
         """
         Handles Product Build event
 
@@ -132,7 +157,7 @@ class WorkStation:
 
         self.minutesBusy = prouductionTime
 
-        productBuiltEvent = WorkStationEvent(currentTime, currentTime, EventType.WS, self.getId())
+        productBuiltEvent = WorkstationEvent(currentTime, currentTime, EventType.WS, self.getId())
         
         return productBuiltEvent
         
