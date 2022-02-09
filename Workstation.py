@@ -1,5 +1,4 @@
 from random import randint
-from tkinter import EventType
 from Buffer import Buffer
 
 
@@ -14,6 +13,12 @@ class WorkStation:
         self.serviceTimes = self.__stripServiceTimes(filename)
 
     def __stripServiceTimes(filename: str):
+        """
+        Strips all the service times from the file
+
+        Parameter:
+            Filename: String containing the relative path to the file containing the service times for the workstation
+        """
         serviceTimes = []
         try:
             with open(filename, 'r') as file:
@@ -24,31 +29,31 @@ class WorkStation:
         return serviceTimes 
 
     def getId(self):
+        """
+        Gets the id of the workstation
+
+        Returns:
+            int: Id of the workstation
+        """
         return self.id
-            
-    def getBuffers(self):
-        return self.buffers
-
-    def setBuffers(self, index: int, buffer: Buffer) -> bool:
-        numBuffers = len(self.buffers)
-
-        if(index >= numBuffers or index < 0):
-            return False
-
-        self.buffers[index] = buffer
-        return True
 
     def getIsBusy(self) -> bool:
+        """
+        Checks if the workstation is busy or not
+
+        Returns:
+            bool: True if the workstaiton is busy, False if the workstation is not busy
+        """
         return self.isBusy
     
-    def setIsBusy(self, isBusy: bool):
-        self.isBusy = isBusy
-    
     def getMinutesBusy(self) -> int:
+        """
+        Time that the workstation was busy building products
+
+        Returns:
+            int: Total time the workstation was busy
+        """
         return self.minutesBusy
-    
-    def setMinutesBusy(self, minutesBusy: int):
-        self.minutesBusy(minutesBusy)
 
     def handleInspectorDone(self, event: InspectorEvent) -> Event:
         """
@@ -56,18 +61,20 @@ class WorkStation:
 
         Goes through each buffer removing a component in order to build a product
         
-        Parameters:
-            WorkstationEvent: Returns a Product Build (WS) event when 
+        Args:
+            InspectorEvent: The event where an Inspector is done 
         
         Return:
-            WorkstationEvent: If the workstation is not busy
+            WorkstationEvent: Return a Workstation Started Event (WS)
             None: If the workstation is busy
         """
         currentTime = event.getStartTime()
         startEvent = None
 
+        #Create the workstation started event only if the buffers are ready and if the workstation is free
         if self.__buffersAreReady() and not self.getIsBusy():
             startEvent = WorkStationEvent(currentTime, currentTime, EventType.WS, self.getId())
+        
         return startEvent
 
     def handleWorkstationStarted(self, event: WorkstationEvent) -> event:
@@ -76,20 +83,30 @@ class WorkStation:
 
         Goes through each buffer removing a component in order to build a product
 
-        Parameter:
+        Args:
             WorkstationEvent: Creates a workstation event
+
         Return:
-            WorkstationEvent: Returns a Product Build (WD) event when 
+            WorkstationEvent: Returns a Product Build (WD) 
         """
+
+        #Set workstation to busy
+        self.isBusy = True
+
+        #Generate a random service time for the workstation
         randomServiceTime = self.__generateRandomServiceTime()
+
         currentTime = event.getStartTime()
-        self.setIsBusy(True)
+
+        # Remove a component from each buffer in order to build the product
         for buffer in self.buffers:
             if buffer.isEmpty():
                 raise ValueError("Buffer is empty it should not be empty")
             else:
                 buffer.removeComponent()
+        
         productBuilt = WorkstationEvent(currentTime, currentTime + randomServiceTime, EventType.WD, self.getId())
+        return productBuilt
 
     def handleProductBuilt(self, event: WorkstationEvent) -> event:
         """
@@ -97,12 +114,12 @@ class WorkStation:
 
         Frees up workstation, updates the number of products created, and calculates the time it took to build the product
 
-        Parameters:
+        Args:
             WorkstationEvent: Returns a workstation started event to take next job
         """
 
         #Free up workstation now that the product is built
-        self.setIsBusy(False)
+        self.isBusy = False
 
         #Increment number of products created
         self.numProductsCreated += 1
@@ -113,7 +130,7 @@ class WorkStation:
         prouductionTime = currentTime - event.getCreatedTime()
 
 
-        self.setMinutesBusy(prouductionTime)
+        self.minutesBusy = prouductionTime
 
         productBuiltEvent = WorkStationEvent(currentTime, currentTime, EventType.WS, self.getId())
         
