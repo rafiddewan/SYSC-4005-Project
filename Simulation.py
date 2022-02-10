@@ -30,12 +30,12 @@ def createInspectors(buffers: List[Buffer]):
     Returns:
         List[Inspector]: a list containing all inspectors
     """
-    ins1 = Inspector(1, 3, [Component.C1], 'servinsp1.dat')
+    ins1 = Inspector(1, 3, [Component.C1], ['servinsp1.dat'])
     ins1.setBuffer(0,buffers[0])
     ins1.setBuffer(1,buffers[1])
     ins1.setBuffer(2,buffers[2])
 
-    ins2 = Inspector(2, 2, [Component.C2, Component.C3], 'servinsp22.dat')
+    ins2 = Inspector(2, 2, [Component.C2, Component.C3], ['servinsp22.dat', 'servinsp23.dat'])
     ins2.setBuffer(0,buffers[3])
     ins2.setBuffer(1,buffers[4])
     return [ins1,ins2]

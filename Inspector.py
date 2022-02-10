@@ -10,14 +10,14 @@ import numpy as np
 
 class Inspector:
 
-    def __init__(self, id, numBuffers, componentsToHandle, filename):
+    def __init__(self, id, numBuffers, componentsToHandle, filenames):
         """Initialize an inspector
 
         Args:
             id (int): The inspector's id. In our simulation this will either be 1 or 2
             numBuffers (int): The number of buffers assigned to this inspector
             componentsToHandle (Component[]): The components the inspector is capable of processing
-            filename (string): Relative path to the file that contains the inspector's cleaning time data
+            filenames (List[String]): Relative path to the file that contains the inspector's cleaning time data
         """
         self.id = id
         self.numBuffers = numBuffers
@@ -25,9 +25,10 @@ class Inspector:
         self.timeBlocked = 0
         self.isBlocked = False
         self.blockedStartTime = 0.0
-        self.fileName = filename
         self.componentsToHandle = componentsToHandle
-        self.timeData = np.loadtxt(self.fileName) # store all of the sample data from the file
+        self.timeData = {}
+        for i in range(len(componentsToHandle)): #populate dict with key as component and value as the array of times
+            self.timeData[componentsToHandle[i]] = np.loadtxt(filenames[i])
         self.currComponent = None
 
     def getBuffers(self):
@@ -84,9 +85,9 @@ class Inspector:
         """
         if (event.getInspectorId() != self.id) or (self.isBlocked):
             return None
+        self.currComponent = self.__selectComponentToClean()
         cleaningTime = self.__generateRandomCleaningTime()
         currentTime = event.getStartTime()
-        self.currComponent = self.__selectComponentToClean()
         if (self.currComponent == None):
             raise ValueError("Inspector is not fully configured for use. Please set the components this inspector should handle.")
 
@@ -145,8 +146,7 @@ class Inspector:
         Returns:
             float: The amount of time the inspector will take to clean the component
         """
-        index = random.randint(0, len(self.timeData)-1)
-        return self.timeData[index]
+        return random.choice(self.timeData[self.currComponent])
     
     def __selectComponentToClean(self) -> Component:
         """If the inspector handles more than one component, randomly select which one to clean.

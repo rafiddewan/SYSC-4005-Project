@@ -37,4 +37,3 @@ class Event:
              (EventType) : The type of event
         """
         return self.eventType
-        
