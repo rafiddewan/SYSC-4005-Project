@@ -4,8 +4,7 @@ from EventType import EventType
 
 
 class InspectorEvent(Event):
-    def __init__(self, createdTime: float, startTime: float, eventType: EventType, inspectorId: int,
-                 componentType: Component):
+    def __init__(self, createdTime: float, startTime: float, eventType: EventType, inspectorId: int):
         """Initialize an inspector event
 
         Args:
@@ -17,7 +16,6 @@ class InspectorEvent(Event):
         """
         Event.__init__(self, createdTime, startTime, eventType)
         self.inspectorId = inspectorId
-        self.componentType = componentType
     
     def getInspectorId(self):
         """Get the id of the inspector that created this event
@@ -26,11 +24,3 @@ class InspectorEvent(Event):
             int : Id of the inspector
         """
         return self.inspectorId
-    
-    def getComponentType(self):
-        """Get the component type that the inspector is working with right now
-
-        Returns:
-            Component : The component type 
-        """
-        return self.componentType
