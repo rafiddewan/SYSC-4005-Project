@@ -22,7 +22,7 @@ class WorkStation:
         self.buffers = [None] * numBuffers
         self.numProductsCreated = 0
         self.isBusy = False
-        self.minutesBusy = 0
+        self.minutesBusy = 0.0
         try:
             self.serviceTimes = np.loadtxt(filename) 
         except FileNotFoundError:
@@ -116,8 +116,10 @@ class WorkStation:
             WorkstationEvent: Creates a workstation event
 
         Return:
-            WorkstationEvent: Returns a Product Build (WD) 
+            WorkstationEvent: Returns a Workstation Done (WD) 
         """
+        if event.workstationId != self.id:
+            return None
 
         #Set workstation to busy
         self.isBusy = True
@@ -134,19 +136,21 @@ class WorkStation:
             else:
                 buffer.removeComponent()
         
-        productBuilt = WorkstationEvent(currentTime, currentTime + randomServiceTime, EventType.WD, self.getId())
-        return productBuilt
+        workStationDone = WorkstationEvent(currentTime, currentTime + randomServiceTime, EventType.WD, self.getId())
+        return workStationDone
 
-    def handleProductBuilt(self, event: WorkstationEvent) -> Event:
+    def handleWorkstationDone(self, event: WorkstationEvent) -> Event:
         """
-        Handles Product Build event
+        Handles WorkStation Done event
 
         Frees up workstation, updates the number of products created, and calculates the time it took to build the product
 
         Args:
             WorkstationEvent: Returns a workstation started event to take next job
         """
-
+        if event.getWorkstationId() != self.getId():
+            return None
+            
         #Free up workstation now that the product is built
         self.isBusy = False
 

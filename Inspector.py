@@ -10,25 +10,26 @@ import numpy as np
 
 class Inspector:
 
-    def __init__(self, id, numBuffers, numComponentsToHandle, filename):
+    def __init__(self, id, numBuffers, componentsToHandle, filenames):
         """Initialize an inspector
 
         Args:
             id (int): The inspector's id. In our simulation this will either be 1 or 2
             numBuffers (int): The number of buffers assigned to this inspector
-            numComponentsToHandle (int): The number of components this inspector creates
-            filename (string): Relative path to the file that contains the inspector's cleaning time data
+            componentsToHandle (Component[]): The components the inspector is capable of processing
+            filenames (List[String]): Relative path to the file that contains the inspector's cleaning time data
         """
         self.id = id
         self.numBuffers = numBuffers
         self.buffers = [None] * numBuffers  # creates an empty array of length numBuffers
-        self.timeBlocked = 0
+        self.timeBlocked = 0.0
         self.isBlocked = False
-        self.blockedStartTime = 0.0;
-        self.fileName = filename
-        self.numComponentsToHandle = numComponentsToHandle
-        self.componentsToHandle = [None] * numComponentsToHandle # creates an empty array of length numComponentsToHandle
-        self.timeData = np.loadtxt(self.fileName) # store all of the sample data from the file
+        self.blockedStartTime = 0.0
+        self.componentsToHandle = componentsToHandle
+        self.timeData = {}
+        for i in range(len(componentsToHandle)): #populate dict with key as component and value as the array of times
+            self.timeData[componentsToHandle[i]] = np.loadtxt(filenames[i])
+        self.currComponent = None
 
     def getBuffers(self):
         """Get the list of buffers this inspector has
@@ -48,7 +49,7 @@ class Inspector:
         Returns:
             bool : True if the buffer was successfully added
         """
-        if 0 < index < self.numBuffers:
+        if 0 <= index < self.numBuffers:
             self.buffers[index] = buffer
             return True
         return False
@@ -60,21 +61,6 @@ class Inspector:
             Component[]: The components this inspector handles
         """
         self.componentsToHandle
-    
-    def setComponentToHandle(self, index: int, component: Component) -> bool:
-        """Set a component to one of the items in the list of components to handle
-
-        Args:
-            index (int): Where in the list the component should be added to
-            component (Component): Component to be added
-
-        Returns:
-            [type]: True if component was added
-        """
-        if 0 < index < self.numComponentsToHandle:
-            self.componentsToHandle[index] = component
-            return True
-        return False
 
     def getTimeBlocked(self):
         """Get the amount of time this inspector has been blocked
@@ -97,15 +83,15 @@ class Inspector:
         Returns:
             Event: An Inspector Done event to be added to the Simulation's future event list
         """
-        if self.isBlocked:
+        if (event.getInspectorId() != self.id) or (self.isBlocked):
             return None
+        self.currComponent = self.__selectComponentToClean()
         cleaningTime = self.__generateRandomCleaningTime()
         currentTime = event.getStartTime()
-        componentType = self.__selectComponentToClean()
-        if (componentType == None):
+        if (self.currComponent == None):
             raise ValueError("Inspector is not fully configured for use. Please set the components this inspector should handle.")
 
-        doneEvent = InspectorEvent(currentTime, (currentTime + cleaningTime), EventType.ID, self.id, componentType)
+        doneEvent = InspectorEvent(currentTime, (currentTime + cleaningTime), EventType.ID, self.id)
         return doneEvent
     
     def handleInspectorDone(self, event: InspectorEvent) -> Event:
@@ -119,10 +105,13 @@ class Inspector:
             Event: An Inspector Started event to be added to the Simulation's future event list. None if the inspector
             is blocked
         """
-        success = self.__iterateThroughBuffers(event.getComponentType())
+        if (event.getInspectorId() != self.id): #not this inspector
+            return None
+
+        success = self.__iterateThroughBuffers(self.currComponent)
         currentTime = event.getStartTime()
         if success:
-            startEvent = InspectorEvent(currentTime, currentTime, EventType.IS, self.id, None)
+            startEvent = InspectorEvent(currentTime, currentTime, EventType.IS, self.id)
             return startEvent
         else:
             self.isBlocked = True
@@ -141,12 +130,12 @@ class Inspector:
             is blocked
         """
         if self.isBlocked:
-            success = self.__iterateThroughBuffers(event.getComponentType())
+            success = self.__iterateThroughBuffers(self.currComponent)
             if success:
                 self.isBlocked = False
                 currentTime = event.getStartTime()
                 self.timeBlocked += currentTime - self.blockedStartTime
-                startEvent = InspectorEvent(currentTime, currentTime, EventType.IS, self.id, None)
+                startEvent = InspectorEvent(currentTime, currentTime, EventType.IS, self.id)
                 return startEvent
         return None
 
@@ -157,8 +146,7 @@ class Inspector:
         Returns:
             float: The amount of time the inspector will take to clean the component
         """
-        index = random.randint(0, len(self.timeData)-1)
-        return self.timeData[index]
+        return random.choice(self.timeData[self.currComponent])
     
     def __selectComponentToClean(self) -> Component:
         """If the inspector handles more than one component, randomly select which one to clean.
@@ -166,12 +154,8 @@ class Inspector:
         Returns:
             Component: The component type to be cleaned
         """
-        if self.numComponentsToHandle == 1:
-            return self.componentsToHandle[0]
-        else:
-            index = random.randint(0, self.numComponentsToHandle - 1)
-            return self.componentsToHandle[index]
-    
+        return random.choice(self.componentsToHandle)
+        
     def __iterateThroughBuffers(self, componentType: Component) -> bool:
         """Iterate through the buffers to see if the inspector can add a component to at least one of them.
 
