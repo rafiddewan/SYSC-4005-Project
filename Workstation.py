@@ -22,7 +22,7 @@ class WorkStation:
         self.buffers = [None] * numBuffers
         self.numProductsCreated = 0
         self.isBusy = False
-        self.minutesBusy = 0
+        self.minutesBusy = 0.0
         try:
             self.serviceTimes = np.loadtxt(filename) 
         except FileNotFoundError:

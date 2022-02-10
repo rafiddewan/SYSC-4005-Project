@@ -12,7 +12,6 @@ class InspectorEvent(Event):
             startTime (float): The time where this event should start at
             eventType (EventType): The type of event
             inspectorId (int): The id of the inspector
-            componentType (Component): The type of component that the inspector is working with right now
         """
         Event.__init__(self, createdTime, startTime, eventType)
         self.inspectorId = inspectorId

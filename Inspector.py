@@ -22,7 +22,7 @@ class Inspector:
         self.id = id
         self.numBuffers = numBuffers
         self.buffers = [None] * numBuffers  # creates an empty array of length numBuffers
-        self.timeBlocked = 0
+        self.timeBlocked = 0.0
         self.isBlocked = False
         self.blockedStartTime = 0.0
         self.componentsToHandle = componentsToHandle

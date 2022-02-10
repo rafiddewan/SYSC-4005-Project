@@ -101,7 +101,7 @@ class Simulation:
             self.fel.append(event)
         self.fel.sort(key=lambda x: x.getStartTime()) #sort fel by the start times
 
-    def handleInspectorStarted(self, event:Event):
+    def handleInspectorStarted(self, event:Event) -> List[Event]:
         """
         Handles the logic for when an inspector started event is next.
         Passes the event to all inspectors to handle individually.
@@ -117,7 +117,7 @@ class Simulation:
                 events.append(newEvent)
         return events
 
-    def handleInspectorDone(self, event:Event):
+    def handleInspectorDone(self, event:Event) -> List[Event]:
         """
         Handles the logic for when an Inspector Done event is next.
         Passes the event to all inspectors and workstations to handle individually.
@@ -137,7 +137,7 @@ class Simulation:
                 events.append(newEvent)
         return events
 
-    def handleWorkstationStarted(self, event:Event):
+    def handleWorkstationStarted(self, event:Event) -> List[Event]:
         """
         Handles the logic for when an Workstation Started event is next.
         Passes the event to all inspectors and workstations to handle individually.
@@ -157,7 +157,7 @@ class Simulation:
                 events.append(newEvent)
         return events
 
-    def handleWorkstationDone(self, event:Event):
+    def handleWorkstationDone(self, event:Event) -> List[Event]:
         """
         Handles the logic for when an Workstation Done event is next.
         Passes the event to all workstations to handle individually.
