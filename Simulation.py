@@ -9,7 +9,7 @@ from typing import List
 
 MAX_BUFFER_SIZE = 2
 
-def createBuffers():
+def createBuffers()-> List[Buffer]:
     """
     Creates the buffers for the inspectors and workstations to use.
     Returns:
@@ -22,7 +22,7 @@ def createBuffers():
     buf5 = Buffer(5,MAX_BUFFER_SIZE,Component.C3)
     return [buf1, buf2, buf3, buf4, buf5]
 
-def createInspectors(buffers: List[Buffer]):
+def createInspectors(buffers: List[Buffer]) -> List[Inspector]:
     """
     Initializes the inspectors.
     Args:
@@ -40,7 +40,7 @@ def createInspectors(buffers: List[Buffer]):
     ins2.setBuffer(1,buffers[4])
     return [ins1,ins2]
 
-def createWorkstations(buffers: List[Buffer]):
+def createWorkstations(buffers: List[Buffer])-> List[WorkStation]:
     """
     Initializes the workstations.
     Args:
@@ -147,12 +147,12 @@ class Simulation:
             List[Event]: a list containing Events from the inspectors and workstations
         """
         events = []
-        for inspector in self.inspectors:
-            newEvent = inspector.handleWorkstationStarted(event)
-            if newEvent is not None:
-                events.append(newEvent)
         for workstation in self.workstations:
             newEvent = workstation.handleWorkstationStarted(event)
+            if newEvent is not None:
+                events.append(newEvent)
+        for inspector in self.inspectors:
+            newEvent = inspector.handleWorkstationStarted(event)
             if newEvent is not None:
                 events.append(newEvent)
         return events
