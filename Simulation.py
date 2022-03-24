@@ -6,8 +6,10 @@ from Workstation import WorkStation
 from Buffer import Buffer
 from Component import Component
 from typing import List
+from RandomNumberGeneration import RandomNumberGeneration
 
 MAX_BUFFER_SIZE = 2
+
 
 def createBuffers()-> List[Buffer]:
     """
@@ -22,7 +24,8 @@ def createBuffers()-> List[Buffer]:
     buf5 = Buffer(5,MAX_BUFFER_SIZE,Component.C3)
     return [buf1, buf2, buf3, buf4, buf5]
 
-def createInspectors(buffers: List[Buffer]) -> List[Inspector]:
+
+def createInspectors(buffers: List[Buffer], seeds: dict[int]) -> List[Inspector]:
     """
     Initializes the inspectors.
     Args:
@@ -30,17 +33,21 @@ def createInspectors(buffers: List[Buffer]) -> List[Inspector]:
     Returns:
         List[Inspector]: a list containing all inspectors
     """
-    ins1 = Inspector(1, 3, [Component.C1], ['servinsp1.dat'])
-    ins1.setBuffer(0,buffers[0])
-    ins1.setBuffer(1,buffers[1])
-    ins1.setBuffer(2,buffers[2])
+    gen1 = RandomNumberGeneration(seeds[0], 0.096545)
+    ins1 = Inspector(1, 3, [Component.C1], [gen1])
+    ins1.setBuffer(0, buffers[0])
+    ins1.setBuffer(1, buffers[1])
+    ins1.setBuffer(2, buffers[2])
 
-    ins2 = Inspector(2, 2, [Component.C2, Component.C3], ['servinsp22.dat', 'servinsp23.dat'])
-    ins2.setBuffer(0,buffers[3])
-    ins2.setBuffer(1,buffers[4])
-    return [ins1,ins2]
+    gen2 = RandomNumberGeneration(seeds[100000], 0.064363)
+    gen3 = RandomNumberGeneration(seeds[200000], 0.048467)
+    ins2 = Inspector(2, 2, [Component.C2, Component.C3], [gen2, gen3])
+    ins2.setBuffer(0, buffers[3])
+    ins2.setBuffer(1, buffers[4])
+    return [ins1, ins2]
 
-def createWorkstations(buffers: List[Buffer])-> List[WorkStation]:
+
+def createWorkstations(buffers: List[Buffer], seeds: List[int])-> List[WorkStation]:
     """
     Initializes the workstations.
     Args:
@@ -48,17 +55,22 @@ def createWorkstations(buffers: List[Buffer])-> List[WorkStation]:
     Returns:
         List[Workstation]: a list containing all workstations
     """
-    work1 = WorkStation(1,1,'ws1.dat')
-    work2 = WorkStation(2,2,'ws2.dat')
-    work3 = WorkStation(3,2,'ws3.dat')
-    
-    work1.setBuffer(0,buffers[0])
-    work2.setBuffer(0,buffers[1])
-    work2.setBuffer(1,buffers[3])
+    gen1 = RandomNumberGeneration(seeds[300000], 0.217183)
+    gen2 = RandomNumberGeneration(seeds[400000], 0.090150)
+    gen3 = RandomNumberGeneration(seeds[500000], 0.113688)
 
-    work3.setBuffer(0,buffers[2])
-    work3.setBuffer(1,buffers[4])
+    work1 = WorkStation(1, 1, gen1)
+    work2 = WorkStation(2, 2, gen2)
+    work3 = WorkStation(3, 2, gen3)
+    
+    work1.setBuffer(0, buffers[0])
+    work2.setBuffer(0, buffers[1])
+    work2.setBuffer(1, buffers[3])
+
+    work3.setBuffer(0, buffers[2])
+    work3.setBuffer(1, buffers[4])
     return [work1, work2, work3]
+
 
 class Simulation:
 
@@ -67,19 +79,23 @@ class Simulation:
         Constructor for a Simulation which will simulate the system.
         """
         self.fel = []
+        g1 = RandomNumberGeneration(0, 0.0)
+        seeds = g1.generateRandomNumberStreams(100000, 6)
+        print(seeds)
         buffers = createBuffers()
-        self.inspectors = createInspectors(buffers)
-        self.workstations = createWorkstations(buffers)
+        self.inspectors = createInspectors(buffers, seeds)
+        self.workstations = createWorkstations(buffers, seeds)
         self.addStartingEvents()
+
     
     def addStartingEvents(self):
         """
         Adds the events that are created at the very start of the simulation. 
         Events to start each inspector and a Simulation Done event
         """
-        self.addEventToFEL(InspectorEvent(0,0,EventType.IS,1))
-        self.addEventToFEL(InspectorEvent(0,0,EventType.IS,2))
-        self.addEventToFEL(Event(0,60,EventType.SD))
+        self.addEventToFEL(InspectorEvent(0, 0, EventType.IS, 1))
+        self.addEventToFEL(InspectorEvent(0, 0, EventType.IS, 2))
+        self.addEventToFEL(Event(0, 500, EventType.SD))
 
     def addEventToFEL(self, event: Event):
         """
@@ -89,7 +105,6 @@ class Simulation:
         """
         self.fel.append(event)
         self.fel.sort(key=lambda e: e.getStartTime()) #sort fel by the start times
-
 
     def addEventsToFEL(self, events: List[Event]):
         """
@@ -206,6 +221,7 @@ class Simulation:
 
     def printStatistics(self):
         pass
+
 
 def main():
     sim = Simulation()

@@ -9,7 +9,7 @@ import numpy as np
 
 class WorkStation:
     
-    def __init__(self, id, numBuffers, filename):
+    def __init__(self, id, numBuffers, randomNumberGenerator):
         """Workstation constructor
 
         Args:
@@ -23,12 +23,7 @@ class WorkStation:
         self.numProductsCreated = 0
         self.isBusy = False
         self.minutesBusy = 0.0
-        try:
-            self.serviceTimes = np.loadtxt(filename) 
-        except FileNotFoundError:
-            print(f"The following filepath is incorrect: {filename}")
-        except FormatError:
-            print(f"File has incorrect formatting, should have only floating point numbers on each line")
+        self.randomNumberGenerator = randomNumberGenerator
 
     def getBuffers(self):
         """Get the list of buffers this workstation has
@@ -126,6 +121,7 @@ class WorkStation:
 
         #Generate a random service time for the workstation
         randomServiceTime = self.__generateRandomServiceTime()
+        print("workstation " + str(randomServiceTime))
 
         currentTime = event.getStartTime()
 
@@ -174,14 +170,13 @@ class WorkStation:
         
     def __generateRandomServiceTime(self) -> float:
         """
-        Generates a random service time using the random integer generator from the python random library
+        Use the random number generator's method to get the next random sequential random number
 
         Returns:
             float: Amount of time a workstation will take to work on a product
         """
 
-        index = randint(0, len(self.serviceTimes) -1)
-        return self.serviceTimes[index]
+        return self.randomNumberGenerator.generateRandomServiceTime("workstation")
     
     def __buffersAreReady(self) -> bool:
         """

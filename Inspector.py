@@ -6,18 +6,19 @@ from InspectorEvent import InspectorEvent
 from Component import Component
 from WorkstationEvent import WorkstationEvent
 import numpy as np
+from RandomNumberGeneration import RandomNumberGeneration
 
 
 class Inspector:
 
-    def __init__(self, id, numBuffers, componentsToHandle, filenames):
+    def __init__(self, id, numBuffers, componentsToHandle, generators):
         """Initialize an inspector
 
         Args:
             id (int): The inspector's id. In our simulation this will either be 1 or 2
             numBuffers (int): The number of buffers assigned to this inspector
             componentsToHandle (Component[]): The components the inspector is capable of processing
-            filenames (List[String]): Relative path to the file that contains the inspector's cleaning time data
+            seeds (List[int]): Relative path to the file that contains the inspector's cleaning time data
         """
         self.id = id
         self.numBuffers = numBuffers
@@ -26,9 +27,10 @@ class Inspector:
         self.isBlocked = False
         self.blockedStartTime = 0.0
         self.componentsToHandle = componentsToHandle
-        self.timeData = {}
-        for i in range(len(componentsToHandle)): #populate dict with key as component and value as the array of times
-            self.timeData[componentsToHandle[i]] = np.loadtxt(filenames[i])
+        self.randomNumberGenerators = {}
+        for i in range(len(componentsToHandle)): #populate dict with key as component and value as the seed and current Ri
+            # self.timeData[componentsToHandle[i]] = np.loadtxt(filenames[i])
+            self.randomNumberGenerators[componentsToHandle[i]] = generators[i]
         self.currComponent = None
 
     def getBuffers(self):
@@ -87,6 +89,7 @@ class Inspector:
             return None
         self.currComponent = self.__selectComponentToClean()
         cleaningTime = self.__generateRandomCleaningTime()
+        print("inspector " + str(cleaningTime))
         currentTime = event.getStartTime()
         if (self.currComponent == None):
             raise ValueError("Inspector is not fully configured for use. Please set the components this inspector should handle.")
@@ -140,13 +143,12 @@ class Inspector:
         return None
 
     def __generateRandomCleaningTime(self) -> float:
-        """For deliverable 1, we are not calculating the distribution of the given files so we will randomly
-        select a time from the sample data to use.
+        """Use the random number generator's method to get the next random sequential random number
 
         Returns:
             float: The amount of time the inspector will take to clean the component
         """
-        return random.choice(self.timeData[self.currComponent])
+        return self.randomNumberGenerators[self.currComponent].generateRandomServiceTime("inspector")
     
     def __selectComponentToClean(self) -> Component:
         """If the inspector handles more than one component, randomly select which one to clean.
