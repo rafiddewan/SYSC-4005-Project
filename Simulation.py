@@ -6,6 +6,7 @@ from Workstation import WorkStation
 from Buffer import Buffer
 from Component import Component
 from typing import List
+from RandomNumberGeneration import RandomNumberGeneration
 
 MAX_BUFFER_SIZE = 2
 
@@ -208,6 +209,8 @@ class Simulation:
         pass
 
 def main():
+    r = RandomNumberGeneration()
+    r.generateRandomNumberStreams(100000, 6)
     sim = Simulation()
     sim.run()
 
