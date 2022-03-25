@@ -3,11 +3,13 @@ from Component import Component
 
 class Buffer:
 
-    def __init__(self, id, maxSize, componentType: Component):
+    def __init__(self, id, maxSize, componentType: Component, title):
         self.id = id
         self.maxSize = maxSize
         self.size = 0
         self.componentType = componentType
+        self.title = title
+        # self.cumulativeOcc = 0
     
     def getSize(self):
         return self.size
@@ -35,3 +37,6 @@ class Buffer:
     
     def getComponentType(self):
         return self.componentType
+
+    def getTitle(self):
+        return self.title

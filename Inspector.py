@@ -11,7 +11,7 @@ from RandomNumberGeneration import RandomNumberGeneration
 
 class Inspector:
 
-    def __init__(self, id, numBuffers, componentsToHandle, generators):
+    def __init__(self, id, numBuffers, componentsToHandle, generators, title):
         """Initialize an inspector
 
         Args:
@@ -28,10 +28,10 @@ class Inspector:
         self.blockedStartTime = 0.0
         self.componentsToHandle = componentsToHandle
         self.randomNumberGenerators = {}
-        for i in range(len(componentsToHandle)): #populate dict with key as component and value as the seed and current Ri
-            # self.timeData[componentsToHandle[i]] = np.loadtxt(filenames[i])
+        for i in range(len(componentsToHandle)): #populate dict with key as component and value as the random num generator
             self.randomNumberGenerators[componentsToHandle[i]] = generators[i]
         self.currComponent = None
+        self.title = title
 
     def getBuffers(self):
         """Get the list of buffers this inspector has
@@ -71,6 +71,9 @@ class Inspector:
             float: Minutes the inspector has been waiting for a buffer to free up
         """
         return self.timeBlocked
+
+    def getTitle(self):
+        return self.title
 
     def handleInspectorStarted(self, event: InspectorEvent) -> Event:
         """Select a random cleaning time, select a component to clean, create and return an Inspect Done event to be

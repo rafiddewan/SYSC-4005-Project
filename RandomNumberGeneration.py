@@ -1,10 +1,11 @@
 import math
+import numpy as np
 
 
 class RandomNumberGeneration:
     a = 16807
     c = 0
-    m = 2147283647
+    m = 2147483647
     x0 = 1234567
 
     def __init__(self, xi: int, lmbda: float):
@@ -14,23 +15,22 @@ class RandomNumberGeneration:
 
     def generateRandomServiceTime(self, title) -> float:
         self.__lcm()
+        self.ri = self.xi / (self.m + 1)
         print(title + " ri = " + str(self.ri))
-        serviceTime = ((-1)/self.lmbda) * math.log(self.ri)
+        serviceTime = ((-1)/self.lmbda) * np.log(self.ri)
         return serviceTime
 
     def generateRandomNumberStreams(self, b: int, numBlocks: int):
         seeds = {}
-        xj = self.x0
+        self.xi = self.x0
         seeds[0] = self.x0
         currJ = 0
         for i in range(numBlocks):
             for j in range(currJ, i*b):
-                xj = self.__lcm(xj)
+                self.__lcm()
             currJ = i*b
-            seeds[currJ] = xj
+            seeds[currJ] = self.xi
         return seeds
 
     def __lcm(self):
-        self.xi = (self.a * self.ri + self.c) % self.m
-        self.ri = self.xi / self.m
-        return self.xi
+        self.xi = (self.a * self.xi + self.c) % self.m
