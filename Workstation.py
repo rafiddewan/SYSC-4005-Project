@@ -140,7 +140,7 @@ class WorkStation:
                 raise ValueError("Buffer is empty it should not be empty")
             else:
                 buffer.removeComponent()
-        print(f"Workstation {self.id} started assembly at {currentTime}")
+                print(f"Workstation {self.id} removed component {buffer.getComponentType()} from Buffer {buffer.getId()} at {currentTime}")
         workStationDone = WorkstationEvent(currentTime, currentTime + randomServiceTime, EventType.WD, self.getId())
         return workStationDone
 

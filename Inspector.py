@@ -185,6 +185,7 @@ class Inspector:
         success = False
         for buffer in self.buffers:
             if (buffer.getComponentType() == componentType) and not buffer.isFull():
+                print(f"Inspector {self.id} finished cleaning component {componentType} for Buffer {buffer.getId()}")
                 success = buffer.addComponent()
                 if success: 
                     break
