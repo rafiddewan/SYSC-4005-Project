@@ -205,6 +205,7 @@ class Simulation:
         """
         done = False
         while not done:
+            print("----------------------------------------------------------------")
             event:Event = self.fel.pop(0)
             oldClock = self.clock
             newClock = event.getStartTime()
