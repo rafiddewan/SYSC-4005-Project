@@ -11,7 +11,7 @@ from RandomNumberGeneration import RandomNumberGeneration
 
 class Inspector:
 
-    def __init__(self, id, numBuffers, componentsToHandle, generators, title):
+    def __init__(self, id, numBuffers, componentsToHandle, generators):
         """Initialize an inspector
 
         Args:
@@ -31,7 +31,6 @@ class Inspector:
         for i in range(len(componentsToHandle)): #populate dict with key as component and value as the random num generator
             self.randomNumberGenerators[componentsToHandle[i]] = generators[i]
         self.currComponent = None
-        self.title = title
         self.numComponentsPickedUp = 0
 
     def getBuffers(self):
@@ -81,8 +80,8 @@ class Inspector:
         """
         return self.numComponentsPickedUp
 
-    def getTitle(self):
-        return self.title
+    def getId(self):
+        return self.id
 
     def handleInspectorStarted(self, event: InspectorEvent) -> Event:
         """Select a random cleaning time, select a component to clean, create and return an Inspect Done event to be

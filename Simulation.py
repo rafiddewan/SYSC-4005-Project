@@ -17,11 +17,11 @@ def createBuffers()-> List[Buffer]:
     Returns:
         List[Buffer]: the list containing all buffers
     """
-    buf1 = Buffer(1,MAX_BUFFER_SIZE,Component.C1, "Buffer 1")
-    buf2 = Buffer(2,MAX_BUFFER_SIZE,Component.C1, "Buffer 2")
-    buf3 = Buffer(3,MAX_BUFFER_SIZE,Component.C1, "Buffer 3")
-    buf4 = Buffer(4,MAX_BUFFER_SIZE,Component.C2, "Buffer 4")
-    buf5 = Buffer(5,MAX_BUFFER_SIZE,Component.C3, "Buffer 5")
+    buf1 = Buffer(1,MAX_BUFFER_SIZE,Component.C1)
+    buf2 = Buffer(2,MAX_BUFFER_SIZE,Component.C1)
+    buf3 = Buffer(3,MAX_BUFFER_SIZE,Component.C1)
+    buf4 = Buffer(4,MAX_BUFFER_SIZE,Component.C2)
+    buf5 = Buffer(5,MAX_BUFFER_SIZE,Component.C3)
     return [buf1, buf2, buf3, buf4, buf5]
 
 
@@ -34,14 +34,14 @@ def createInspectors(buffers: List[Buffer], seeds: dict[int]) -> List[Inspector]
         List[Inspector]: a list containing all inspectors
     """
     gen1 = RandomNumberGeneration(seeds[0], 0.096545)
-    ins1 = Inspector(1, 3, [Component.C1], [gen1], "Inspector 1")
+    ins1 = Inspector(1, 3, [Component.C1], [gen1])
     ins1.setBuffer(0, buffers[0])
     ins1.setBuffer(1, buffers[1])
     ins1.setBuffer(2, buffers[2])
 
     gen2 = RandomNumberGeneration(seeds[100000], 0.064363)
     gen3 = RandomNumberGeneration(seeds[200000], 0.048467)
-    ins2 = Inspector(2, 2, [Component.C2, Component.C3], [gen2, gen3], "Inspector 2")
+    ins2 = Inspector(2, 2, [Component.C2, Component.C3], [gen2, gen3])
     ins2.setBuffer(0, buffers[3])
     ins2.setBuffer(1, buffers[4])
     return [ins1, ins2]
@@ -59,9 +59,9 @@ def createWorkstations(buffers: List[Buffer], seeds: List[int])-> List[WorkStati
     gen2 = RandomNumberGeneration(seeds[400000], 0.090150)
     gen3 = RandomNumberGeneration(seeds[500000], 0.113688)
 
-    work1 = WorkStation(1, 1, gen1, "Workstation 1")
-    work2 = WorkStation(2, 2, gen2, "Workstation 2")
-    work3 = WorkStation(3, 2, gen3, "Workstation 3")
+    work1 = WorkStation(1, 1, gen1)
+    work2 = WorkStation(2, 2, gen2)
+    work3 = WorkStation(3, 2, gen3)
     
     work1.setBuffer(0, buffers[0])
     work2.setBuffer(0, buffers[1])
@@ -227,15 +227,15 @@ class Simulation:
                           (2 * self.workstations[2].getNumProductsCreated())
 
         for workstation in self.workstations:
-            print(workstation.getTitle() + " is busy " + str((workstation.getMinutesBusy()/self.time) * 100) + "% of the time.")
-            print(workstation.getTitle() + " built " + str(workstation.getNumProductsCreated()) + " products.")
-            print(workstation.getTitle() + " has a throughput of " + str((workstation.getNumProductsCreated()/self.time) * 100))
+            print("Workstation " + str(workstation.getId()) + " is busy " + str((workstation.getMinutesBusy()/self.time) * 100) + "% of the time.")
+            print("Workstation " + str(workstation.getId()) + " built " + str(workstation.getNumProductsCreated()) + " products.")
+            print("Workstation " + str(workstation.getId()) + " has a throughput of " + str((workstation.getNumProductsCreated()/self.time) * 100))
         for inspector in self.inspectors:
-            print(inspector.getTitle() + " has picked up " + str(inspector.getNumComponentsPickedUp()) + " components")
-            print(inspector.getTitle() + " is blocked " + str((inspector.getTimeBlocked()/self.time) * 100) + "% of the time.")
+            print("Inspector " + str(inspector.getId()) + " has picked up " + str(inspector.getNumComponentsPickedUp()) + " components")
+            print("Inspector " + str(inspector.getId()) + " is blocked " + str((inspector.getTimeBlocked()/self.time) * 100) + "% of the time.")
             totalArrivals += inspector.getNumComponentsPickedUp()
         for buffer in self.buffers:
-            print(buffer.getTitle() + " has an avg buffer occupancy of ")
+            print("Buffer " + str(buffer.getId()) + " has an avg buffer occupancy of ")
 
         print("Arrival rate: " + str(totalArrivals))
         print("Departure rate: " + str(totalDepartures))

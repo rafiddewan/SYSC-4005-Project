@@ -9,7 +9,7 @@ import numpy as np
 
 class WorkStation:
     
-    def __init__(self, id, numBuffers, randomNumberGenerator, title):
+    def __init__(self, id, numBuffers, randomNumberGenerator):
         """Workstation constructor
 
         Args:
@@ -24,7 +24,6 @@ class WorkStation:
         self.isBusy = False
         self.minutesBusy = 0.0
         self.randomNumberGenerator = randomNumberGenerator
-        self.title = title
 
     def getBuffers(self):
         """Get the list of buffers this workstation has
@@ -88,9 +87,6 @@ class WorkStation:
         """
 
         return self.minutesBusy
-
-    def getTitle(self):
-        return self.title
 
     def handleInspectorDone(self, event: InspectorEvent) -> Event:
         """
