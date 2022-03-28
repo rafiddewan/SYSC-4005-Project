@@ -97,6 +97,8 @@ class Inspector:
             Event: An Inspector Done event to be added to the Simulation's future event list
         """
         if (event.getInspectorId() != self.id) or (self.isBlocked):
+            if self.isBlocked: 
+                print(f"Inspector {self.id} is blocked")
             return None
         self.currComponent = self.__selectComponentToClean()
         self.numComponentsPickedUp += 1
@@ -104,7 +106,8 @@ class Inspector:
         currentTime = event.getStartTime()
         if (self.currComponent == None):
             raise ValueError("Inspector is not fully configured for use. Please set the components this inspector should handle.")
-
+        
+        print(f"Inspector {self.id} started cleaning {self.currComponent} at {currentTime}")
         doneEvent = InspectorEvent(currentTime, (currentTime + cleaningTime), EventType.ID, self.id)
         return doneEvent
     
@@ -126,6 +129,7 @@ class Inspector:
         currentTime = event.getStartTime()
         if success:
             startEvent = InspectorEvent(currentTime, currentTime, EventType.IS, self.id)
+            print(f"Inspector {self.id} finished cleaning {self.currComponent} at {currentTime}")
             return startEvent
         else:
             self.isBlocked = True

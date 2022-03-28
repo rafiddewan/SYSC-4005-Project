@@ -14,6 +14,7 @@ class Buffer:
         return self.size
     
     def addComponent(self) -> bool:
+        print(f"Adding to buffer {self.id}")
         if self.size < self.maxSize:
             self.size += 1
             return True
@@ -41,6 +42,6 @@ class Buffer:
         return self.cumulativeOcc
 
     def accumulateOcc(self, timeElapsed):
-        print(self.size)
-        print(timeElapsed)
+        print(f"Buffer {self.id} size is: {self.size}")
+        print(f"Time elasped for Buffer {self.id} is: {timeElapsed}")
         self.cumulativeOcc += self.getSize() * timeElapsed

@@ -140,7 +140,7 @@ class WorkStation:
                 raise ValueError("Buffer is empty it should not be empty")
             else:
                 buffer.removeComponent()
-        
+        print(f"Workstation {self.id} started assembly at {currentTime}")
         workStationDone = WorkstationEvent(currentTime, currentTime + randomServiceTime, EventType.WD, self.getId())
         return workStationDone
 
@@ -170,6 +170,8 @@ class WorkStation:
         self.minutesBusy += prouductionTime
 
         startEvent = None
+
+        print(f"Workstation {self.id} finished assembly at {currentTime}")
 
         #Create the workstation started event only if the buffers are ready and if the workstation is free
         if self.__buffersAreReady() and not self.getIsBusy():
