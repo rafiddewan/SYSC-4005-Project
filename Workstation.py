@@ -135,7 +135,6 @@ class WorkStation:
 
         #Generate a random service time for the workstation
         randomServiceTime = self.__generateRandomServiceTime()
-        print("workstation " + str(randomServiceTime))
 
         currentTime = event.getStartTime()
 
@@ -190,7 +189,7 @@ class WorkStation:
             float: Amount of time a workstation will take to work on a product
         """
 
-        return self.randomNumberGenerator.generateRandomServiceTime("workstation")
+        return self.randomNumberGenerator.generateRandomServiceTime()
     
     def __buffersAreReady(self) -> bool:
         """

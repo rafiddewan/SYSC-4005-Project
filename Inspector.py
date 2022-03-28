@@ -32,6 +32,7 @@ class Inspector:
             self.randomNumberGenerators[componentsToHandle[i]] = generators[i]
         self.currComponent = None
         self.title = title
+        self.numComponentsPickedUp = 0
 
     def getBuffers(self):
         """Get the list of buffers this inspector has
@@ -72,6 +73,14 @@ class Inspector:
         """
         return self.timeBlocked
 
+    def getNumComponentsPickedUp(self):
+        """Get the amount of components picked up by the inspector
+
+        Returns:
+            int: Number of components
+        """
+        return self.numComponentsPickedUp
+
     def getTitle(self):
         return self.title
 
@@ -91,8 +100,8 @@ class Inspector:
         if (event.getInspectorId() != self.id) or (self.isBlocked):
             return None
         self.currComponent = self.__selectComponentToClean()
+        self.numComponentsPickedUp += 1
         cleaningTime = self.__generateRandomCleaningTime()
-        print("inspector " + str(cleaningTime))
         currentTime = event.getStartTime()
         if (self.currComponent == None):
             raise ValueError("Inspector is not fully configured for use. Please set the components this inspector should handle.")
@@ -151,7 +160,7 @@ class Inspector:
         Returns:
             float: The amount of time the inspector will take to clean the component
         """
-        return self.randomNumberGenerators[self.currComponent].generateRandomServiceTime("inspector")
+        return self.randomNumberGenerators[self.currComponent].generateRandomServiceTime()
     
     def __selectComponentToClean(self) -> Component:
         """If the inspector handles more than one component, randomly select which one to clean.

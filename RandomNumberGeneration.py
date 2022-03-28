@@ -13,10 +13,9 @@ class RandomNumberGeneration:
         self.lmbda = lmbda
         self.ri = -1.0
 
-    def generateRandomServiceTime(self, title) -> float:
+    def generateRandomServiceTime(self) -> float:
         self.__lcm()
         self.ri = self.xi / (self.m + 1)
-        print(title + " ri = " + str(self.ri))
         serviceTime = ((-1)/self.lmbda) * np.log(self.ri)
         return serviceTime
 

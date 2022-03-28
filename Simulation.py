@@ -78,10 +78,10 @@ class Simulation:
         """
         Constructor for a Simulation which will simulate the system.
         """
-        self.time = 100000
+        self.time = 60
         self.fel = []
         g1 = RandomNumberGeneration(0, 0.0)
-        seeds = g1.generateRandomNumberStreams(self.time, 6)
+        seeds = g1.generateRandomNumberStreams(100000, 6)
         print(seeds)
         self.buffers = createBuffers()
         self.inspectors = createInspectors(self.buffers, seeds)
@@ -96,7 +96,7 @@ class Simulation:
         """
         self.addEventToFEL(InspectorEvent(0, 0, EventType.IS, 1))
         self.addEventToFEL(InspectorEvent(0, 0, EventType.IS, 2))
-        self.addEventToFEL(Event(0, 500, EventType.SD))
+        self.addEventToFEL(Event(0, self.time, EventType.SD))
 
     def addEventToFEL(self, event: Event):
         """
@@ -221,14 +221,24 @@ class Simulation:
         self.printStatistics()
 
     def printStatistics(self):
+        totalArrivals = 0
+        totalDepartures = self.workstations[0].getNumProductsCreated() + \
+                          (2 * self.workstations[1].getNumProductsCreated()) + \
+                          (2 * self.workstations[2].getNumProductsCreated())
+
         for workstation in self.workstations:
-            print(workstation.getTitle() + " is busy " + str((workstation.getMinutesBusy()/self.time) * 100) + " of the time.")
+            print(workstation.getTitle() + " is busy " + str((workstation.getMinutesBusy()/self.time) * 100) + "% of the time.")
             print(workstation.getTitle() + " built " + str(workstation.getNumProductsCreated()) + " products.")
             print(workstation.getTitle() + " has a throughput of " + str((workstation.getNumProductsCreated()/self.time) * 100))
         for inspector in self.inspectors:
-            print(inspector.getTitle() + " is blocked " + str((inspector.getTimeBlocked()/self.time) * 100) + " of the time.")
+            print(inspector.getTitle() + " has picked up " + str(inspector.getNumComponentsPickedUp()) + " components")
+            print(inspector.getTitle() + " is blocked " + str((inspector.getTimeBlocked()/self.time) * 100) + "% of the time.")
+            totalArrivals += inspector.getNumComponentsPickedUp()
         for buffer in self.buffers:
             print(buffer.getTitle() + " has an avg buffer occupancy of ")
+
+        print("Arrival rate: " + str(totalArrivals))
+        print("Departure rate: " + str(totalDepartures))
 
 
 def main():
