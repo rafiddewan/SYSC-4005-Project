@@ -79,6 +79,7 @@ class Simulation:
         Constructor for a Simulation which will simulate the system.
         """
         self.time = 60
+        self.clock = 0
         self.fel = []
         g1 = RandomNumberGeneration(0, 0.0)
         seeds = g1.generateRandomNumberStreams(100000, 6)
@@ -189,6 +190,10 @@ class Simulation:
                 events.append(newEvent)
         return events
 
+    def addBufferOccupancies(self, timeElapsed):
+        for buffer in self.buffers:
+            buffer.accumulateOcc(timeElapsed)
+
     def run(self):
         """
         Handles the logic for running the simulation. 
@@ -201,6 +206,13 @@ class Simulation:
         done = False
         while not done:
             event:Event = self.fel.pop(0)
+            oldClock = self.clock
+            newClock = event.getStartTime()
+            timeElapsed = newClock - oldClock
+            print("time elapsed = " + str(timeElapsed))
+            self.addBufferOccupancies(timeElapsed)
+            self.clock = newClock
+
             if event.getEventType() == EventType.IS:
                 events = self.handleInspectorStarted(event)
                 self.addEventsToFEL(events)
@@ -235,8 +247,8 @@ class Simulation:
             print("Inspector " + str(inspector.getId()) + " is blocked " + str((inspector.getTimeBlocked()/self.time) * 100) + "% of the time.")
             totalArrivals += inspector.getNumComponentsPickedUp()
         for buffer in self.buffers:
-            print("Buffer " + str(buffer.getId()) + " has an avg buffer occupancy of ")
-
+            print("Buffer " + str(buffer.getId()) + " has an avg buffer occupancy of " + str(buffer.getCummulativeOcc()/self.time))
+            print("Buffer size " + str(buffer.getSize()))
         print("Arrival rate: " + str(totalArrivals))
         print("Departure rate: " + str(totalDepartures))
 

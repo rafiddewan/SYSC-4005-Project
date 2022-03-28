@@ -8,7 +8,7 @@ class Buffer:
         self.maxSize = maxSize
         self.size = 0
         self.componentType = componentType
-        # self.cumulativeOcc = 0
+        self.cumulativeOcc = 0
     
     def getSize(self):
         return self.size
@@ -36,3 +36,11 @@ class Buffer:
     
     def getComponentType(self):
         return self.componentType
+
+    def getCummulativeOcc(self):
+        return self.cumulativeOcc
+
+    def accumulateOcc(self, timeElapsed):
+        print(self.size)
+        print(timeElapsed)
+        self.cumulativeOcc += self.getSize() * timeElapsed
