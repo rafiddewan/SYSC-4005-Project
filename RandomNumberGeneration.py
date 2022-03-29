@@ -20,6 +20,9 @@ class RandomNumberGeneration:
         self.lmbda = lmbda
         self.ri = -1.0
 
+    def getXi(self):
+        return self.xi
+
     def generateRandomServiceTime(self) -> float:
         """
         Generates a random number to use as a service time. This uses the inverse transform technique for an exponential

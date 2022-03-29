@@ -99,6 +99,9 @@ class WorkStation:
 
         return self.minutesBusy
 
+    def getGenerator(self):
+        return self.randomNumberGenerator
+
     def handleInspectorDone(self, event: InspectorEvent) -> Event:
         """
         Handles Inspector Done event

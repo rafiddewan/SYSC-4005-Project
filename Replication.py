@@ -1,9 +1,9 @@
 class Replication:
-    def __init__(self, throughput: float, workstationBusy: float, inspectorBlocked:float, avgBufferOccup: float):
-        self.throughput = throughput
-        self.workstationBusy = workstationBusy
-        self.inspectorBlocked = inspectorBlocked
-        self.avgBufferOccup = avgBufferOccup
+    def __init__(self):
+        self.throughput = 0
+        self.probabilityWorkstationBusy = {}
+        self.probabilityInspectorBlocked = {}
+        self.avgBufferOccup = {}
     
     def getThorughput(self) -> float:
         return self.throughput
@@ -11,20 +11,26 @@ class Replication:
     def setThroughput(self, throughput):
         self.throughput = throughput
 
-    def getWorkstationBusy(self) -> float:
-        return self.workstationBusy
+    def getProbabilityWorkstationBusy(self):
+        return self.probabilityWorkstationBusy
     
-    def setWorkstationBusy(self, workstationBusy):
-        self.workstationBusy = workstationBusy
+    def addWorkstationBusyProbability(self, workstationId: int, probability: float):
+        self.probabilityWorkstationBusy[workstationId] = probability
     
-    def getInspectorBlocked(self) -> float:
-        return self.inspectorBlocked
+    def getProbabilityInspectorBlocked(self):
+        return self.probabilityInspectorBlocked
 
-    def setInspectorBlocked(self, inspectorBlocked):
-        self.inspectorBlocked = inspectorBlocked
+    def addInspectorBlockedProbability(self, inspectorId: int, probability: float):
+        self.probabilityInspectorBlocked[inspectorId] = probability
 
-    def getAvgBufferOccupancy(self) -> float:
+    def getAvgBufferOccupancy(self):
         return self.avgBufferOccup
     
-    def setAvgBufferOccupancy(self, avgBufferOccup):
-        self.avgBufferOccup = avgBufferOccup
+    def addAvgBufferOccupancy(self, bufferId:int, avgBufferOccup: float):
+        self.avgBufferOccup[bufferId] = avgBufferOccup
+
+    def printStats(self):
+        print(f"Throughput: {self.throughput}")
+        print(f"Probability Workstations Busy: {self.probabilityWorkstationBusy}")
+        print(f"Probability Inspectors Blocked: {self.probabilityInspectorBlocked}")
+        print(f"Average Buffer Occupancy: {self.avgBufferOccup}")
