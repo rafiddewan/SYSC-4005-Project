@@ -2,6 +2,7 @@ from Event import Event
 from EventType import EventType
 from Inspector import Inspector
 from InspectorEvent import InspectorEvent
+from Replication import Replication
 from Workstation import WorkStation
 from Buffer import Buffer
 from ComponentType import ComponentType
@@ -76,22 +77,23 @@ def createWorkstations(buffers: List[Buffer], seeds: dict[int]) -> List[WorkStat
 
 class Simulation:
 
-    def __init__(self):
+    def __init__(self, seeds):
         """
         Constructor for a Simulation which will simulate the system.
         """
-        self.time = 600000
+        self.time = 15000
         self.clock = 0
         self.fel = []
-        self.b = 100000
-        g1 = RandomNumberGeneration(0, 0.0)
-        seeds = g1.generateRandomNumberStreams(self.b, 6)
-        print("Seeds to use: " + str(seeds))
+        # self.b = 100000
+        # g1 = RandomNumberGeneration(0, 0.0)
+        # seeds = g1.generateRandomNumberStreams(self.b, 6)
+        # print("Seeds being used: " + str(seeds))
         self.buffers = createBuffers()
         self.inspectors = createInspectors(self.buffers, seeds)
         self.workstations = createWorkstations(self.buffers, seeds)
         self.addStartingEvents()
         self.totalComponentTime = 0
+        self.xis = {}
 
 
     def addStartingEvents(self):
@@ -216,6 +218,25 @@ class Simulation:
             if(workstation.getIsBusy()):
                 self.totalComponentTime += workstation.getNumComponents() * timeElapsed
 
+    def getXis(self):
+        return self.xis
+
+    def grabXis(self):
+        # self.xis["Workstations"] = []
+        # self.xis["Inspectors"] = {}
+        # for workstation in self.workstations:
+        #     self.xis["Workstations"].append(workstation.getGenerator().getXi())
+        # self.xis["Inspectors"]["Inspector 1"] = []
+        # self.xis["Inspectors"]["Inspector 1"].append(self.inspectors[0].getGenerators()[0].getXi())
+        # self.xis["Inspectors"]["Inspector 2"] = []
+        # self.xis["Inspectors"]["Inspector 2"].append(self.inspectors[1].getGenerators()[0].getXi())
+        # self.xis["Inspectors"]["Inspector 2"].append(self.inspectors[1].getGenerators()[1].getXi())
+        self.xis[0] = self.inspectors[0].getGenerators()[0].getXi()
+        self.xis[100000] = self.inspectors[1].getGenerators()[0].getXi()
+        self.xis[200000] = self.inspectors[1].getGenerators()[1].getXi()
+        self.xis[300000] = self.workstations[0].getGenerator().getXi()
+        self.xis[400000] = self.workstations[1].getGenerator().getXi()
+        self.xis[500000] = self.workstations[2].getGenerator().getXi()
 
     def run(self):
         """
@@ -269,7 +290,8 @@ class Simulation:
             else:
                 raise ValueError("Unidentified EventType received.")
         print("Simulation successfully completed")
-        self.printStatistics()
+        self.grabXis()
+        # self.printStatistics()
 
     def printWorkstationStats(self, workstation):
         """
@@ -331,7 +353,7 @@ class Simulation:
         totalLeftOverWorkstationDoneEvents = 0
         totalInspectorsBlockedAndHolding = 0
 
-        print(f"\n---------------------------Individual Statistics---------------------------")
+        print(f"\n-----------------------Individual Statistics-----------------------")
         for workstation in self.workstations:
             self.printWorkstationStats(workstation)
             totalProducts += workstation.getNumProductsCreated()
@@ -371,12 +393,19 @@ class Simulation:
         print("Arrival Rate * Average Time in System: " + str((totalCompletedCompTime/totalDepartures) * (totalArrivals/self.time)))
         print("Average Number of Components in the System: " + str(self.totalComponentTime/self.time))
 
-
-
-def main():
-    sim = Simulation()
-    sim.run()
-
-
-if __name__ == "__main__":
-   main()
+    def getStatistics(self):
+        replication = Replication()
+        totalProducts = 0
+        for workstation in self.workstations:
+            probabilityWorkstationBusy = (workstation.getMinutesBusy() / self.time) * 100
+            replication.addWorkstationBusyProbability(workstation.getId(), probabilityWorkstationBusy)
+            totalProducts += workstation.getNumProductsCreated()
+        for inspector in self.inspectors:
+            probabilityInspectorBlocked = (inspector.getTimeBlocked() / self.time) * 100
+            replication.addInspectorBlockedProbability(inspector.getId(), probabilityInspectorBlocked)
+        for buffer in self.buffers:
+            avgBufferOccup = buffer.getCummulativeOcc() / self.time
+            replication.addAvgBufferOccupancy(buffer.getId(), avgBufferOccup)
+        throughput = totalProducts/self.time
+        replication.setThroughput(throughput)
+        return replication

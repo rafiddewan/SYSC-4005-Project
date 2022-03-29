@@ -89,6 +89,12 @@ class Inspector:
         """
         return self.id
 
+    def getGenerators(self):
+        generators = []
+        for componentType in self.componentsToHandle:
+            generators.append(self.randomNumberGenerators[componentType])
+        return generators
+
     def handleInspectorStarted(self, event: InspectorEvent) -> Event:
         """Select a random cleaning time, select a component to clean, create and return an Inspect Done event to be
         added to the FEL
