@@ -26,6 +26,7 @@ class WorkStation:
         self.randomNumberGenerator = randomNumberGenerator
         self.currComponents = [None] * numBuffers
         self.componentsBuilt = []
+        self.isSteadyState = False
 
     def getBuffers(self):
         """Get the list of buffers this workstation has
@@ -102,6 +103,9 @@ class WorkStation:
     def getGenerator(self):
         return self.randomNumberGenerator
 
+    def setSteadyState(self, steadyState):
+        self.isSteadyState = steadyState
+
     def handleInspectorDone(self, event: InspectorEvent) -> Event:
         """
         Handles Inspector Done event
@@ -174,7 +178,8 @@ class WorkStation:
         self.isBusy = False
 
         #Increment number of products created
-        self.numProductsCreated += 1
+        if self.isSteadyState:
+            self.numProductsCreated += 1
         
         currentTime = event.getStartTime()
         
@@ -185,7 +190,8 @@ class WorkStation:
         #Calculate how long it took to build the product
         prouductionTime = currentTime - event.getCreatedTime()
 
-        self.minutesBusy += prouductionTime
+        if self.isSteadyState:
+            self.minutesBusy += prouductionTime
 
         startEvent = None
 

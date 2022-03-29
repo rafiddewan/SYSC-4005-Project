@@ -82,6 +82,8 @@ class Simulation:
         Constructor for a Simulation which will simulate the system.
         """
         self.time = 15000
+        self.warmup = 1000
+        self.steadyStateTime = self.time - self.warmup
         self.clock = 0
         self.fel = []
         # self.b = 100000
@@ -103,7 +105,9 @@ class Simulation:
         """
         self.addEventToFEL(InspectorEvent(0, 0, EventType.IS, 1))
         self.addEventToFEL(InspectorEvent(0, 0, EventType.IS, 2))
+        self.addEventToFEL(Event(0, self.warmup, EventType.SSS))
         self.addEventToFEL(Event(0, self.time, EventType.SD))
+
 
     def addEventToFEL(self, event: Event):
         """
@@ -218,19 +222,20 @@ class Simulation:
             if(workstation.getIsBusy()):
                 self.totalComponentTime += workstation.getNumComponents() * timeElapsed
 
+    def setSteadyState(self):
+        for buffer in self.buffers:
+            buffer.setSteadyState(True)
+
+        for inspector in self.inspectors:
+            inspector.setSteadyState(True)
+
+        for workstation in self.workstations:
+            workstation.setSteadyState(True)
+
     def getXis(self):
         return self.xis
 
     def grabXis(self):
-        # self.xis["Workstations"] = []
-        # self.xis["Inspectors"] = {}
-        # for workstation in self.workstations:
-        #     self.xis["Workstations"].append(workstation.getGenerator().getXi())
-        # self.xis["Inspectors"]["Inspector 1"] = []
-        # self.xis["Inspectors"]["Inspector 1"].append(self.inspectors[0].getGenerators()[0].getXi())
-        # self.xis["Inspectors"]["Inspector 2"] = []
-        # self.xis["Inspectors"]["Inspector 2"].append(self.inspectors[1].getGenerators()[0].getXi())
-        # self.xis["Inspectors"]["Inspector 2"].append(self.inspectors[1].getGenerators()[1].getXi())
         self.xis[0] = self.inspectors[0].getGenerators()[0].getXi()
         self.xis[100000] = self.inspectors[1].getGenerators()[0].getXi()
         self.xis[200000] = self.inspectors[1].getGenerators()[1].getXi()
@@ -285,6 +290,8 @@ class Simulation:
                 #     f"Created Time: {event.getCreatedTime()} Start Time: {event.getStartTime()}")
                 events = self.handleWorkstationDone(event)
                 self.addEventsToFEL(events)
+            elif event.getEventType() == EventType.SSS:
+                self.setSteadyState()
             elif event.getEventType() == EventType.SD:
                 done = True
             else:
@@ -303,11 +310,11 @@ class Simulation:
 
         """
         print("Workstation " + str(workstation.getId()) + " is busy " + str(
-            (workstation.getMinutesBusy() / self.time) * 100) + "% of the time.")
+            (workstation.getMinutesBusy() / self.steadyStateTime) * 100) + "% of the time.")
         print("Workstation " + str(workstation.getId()) + " built " + str(
             workstation.getNumProductsCreated()) + " products.")
         print("Workstation " + str(workstation.getId()) + " has a throughput of " + str(
-            (workstation.getNumProductsCreated() / self.time) * 100))
+            (workstation.getNumProductsCreated() / self.steadyStateTime) * 100))
 
     def printInspectorStats(self, inspector):
         """
@@ -321,7 +328,7 @@ class Simulation:
         print("Inspector " + str(inspector.getId()) + " has picked up " + str(
             inspector.getNumComponentsPickedUp()) + " components")
         print("Inspector " + str(inspector.getId()) + " is blocked " + str(
-            (inspector.getTimeBlocked() / self.time) * 100) + "% of the time.")
+            (inspector.getTimeBlocked() / self.steadyStateTime) * 100) + "% of the time.")
 
     def printBufferStats(self, buffer):
         """
@@ -333,7 +340,7 @@ class Simulation:
 
         """
         print("Buffer " + str(buffer.getId()) + " has an avg buffer occupancy of " + str(
-            buffer.getCummulativeOcc() / self.time))
+            buffer.getCummulativeOcc() / self.steadyStateTime))
         print("Left over buffer size " + str(buffer.getSize()))
 
     def printStatistics(self):
@@ -371,7 +378,7 @@ class Simulation:
             totalLeftInBuffer += buffer.getSize()
 
         print(f"\n---------------------------Statistics---------------------------")
-        print("Total Throughput: " + str(totalProducts/self.time))
+        print("Total Throughput: " + str(totalProducts/self.steadyStateTime))
         print(f"\nTotal Arrivals: " + str(totalArrivals))
         print("Total Departures: " + str(totalDepartures))
         print("Left over events: ")
@@ -388,24 +395,24 @@ class Simulation:
               str(totalArrivals == (totalDepartures + totalLeftOverInspectorDoneEvents + totalLeftInBuffer +
                                     totalLeftOverWorkstationDoneEvents + totalInspectorsBlockedAndHolding)))
         print(f"\nLittle's law: ")
-        print("Arrival Rate: " + str(totalArrivals/self.time))
+        print("Arrival Rate: " + str(totalArrivals/self.steadyStateTime))
         print("Average Time in System: " + str(totalCompletedCompTime/totalDepartures))
-        print("Arrival Rate * Average Time in System: " + str((totalCompletedCompTime/totalDepartures) * (totalArrivals/self.time)))
-        print("Average Number of Components in the System: " + str(self.totalComponentTime/self.time))
+        print("Arrival Rate * Average Time in System: " + str((totalCompletedCompTime/totalDepartures) * (totalArrivals/self.steadyStateTime)))
+        print("Average Number of Components in the System: " + str(self.totalComponentTime/self.steadyStateTime))
 
     def getStatistics(self):
         replication = Replication()
         totalProducts = 0
         for workstation in self.workstations:
-            probabilityWorkstationBusy = (workstation.getMinutesBusy() / self.time) * 100
+            probabilityWorkstationBusy = (workstation.getMinutesBusy() / self.steadyStateTime) * 100
             replication.addWorkstationBusyProbability(workstation.getId(), probabilityWorkstationBusy)
             totalProducts += workstation.getNumProductsCreated()
         for inspector in self.inspectors:
-            probabilityInspectorBlocked = (inspector.getTimeBlocked() / self.time) * 100
+            probabilityInspectorBlocked = (inspector.getTimeBlocked() / self.steadyStateTime) * 100
             replication.addInspectorBlockedProbability(inspector.getId(), probabilityInspectorBlocked)
         for buffer in self.buffers:
-            avgBufferOccup = buffer.getCummulativeOcc() / self.time
+            avgBufferOccup = buffer.getCummulativeOcc() / self.steadyStateTime
             replication.addAvgBufferOccupancy(buffer.getId(), avgBufferOccup)
-        throughput = totalProducts/self.time
+        throughput = totalProducts/self.steadyStateTime
         replication.setThroughput(throughput)
         return replication
