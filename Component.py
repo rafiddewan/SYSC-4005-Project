@@ -5,7 +5,7 @@ class Component:
     def __init__(self, arrivalTime:float, componentType:ComponentType):
         self.arrivalTime = arrivalTime
         self.componentType = componentType
-        self.departureTime = 100000.0
+        self.departureTime = None
 
     def getComponentType(self) -> ComponentType:
         return self.componentType
