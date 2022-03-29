@@ -3,8 +3,9 @@ from Buffer import Buffer
 from Event import Event
 from EventType import EventType
 from InspectorEvent import InspectorEvent
-from Component import Component
+from ComponentType import ComponentType
 from WorkstationEvent import WorkstationEvent
+from Component import Component
 import numpy as np
 from RandomNumberGeneration import RandomNumberGeneration
 
@@ -30,8 +31,9 @@ class Inspector:
         self.randomNumberGenerators = {}
         for i in range(len(componentsToHandle)): #populate dict with key as component and value as the random num generator
             self.randomNumberGenerators[componentsToHandle[i]] = generators[i]
-        self.currComponent = None
+        self.currComponentType = None
         self.numComponentsPickedUp = 0
+        self.currComponent = None
 
     def getBuffers(self):
         """Get the list of buffers this inspector has
@@ -100,11 +102,12 @@ class Inspector:
             if self.isBlocked: 
                 print(f"Inspector {self.id} is blocked")
             return None
-        self.currComponent = self.__selectComponentToClean()
+        self.currComponentType = self.__selectComponentToClean()
         self.numComponentsPickedUp += 1
         cleaningTime = self.__generateRandomCleaningTime()
         currentTime = event.getStartTime()
-        if (self.currComponent == None):
+        self.currComponent = Component(currentTime, self.currComponentType)
+        if (self.currComponentType == None):
             raise ValueError("Inspector is not fully configured for use. Please set the components this inspector should handle.")
         
         print(f"Inspector {self.id} started cleaning {self.currComponent} at {currentTime}")
@@ -125,7 +128,7 @@ class Inspector:
         if (event.getInspectorId() != self.id): #not this inspector
             return None
 
-        success = self.__iterateThroughBuffers(self.currComponent)
+        success = self.__iterateThroughBuffers(self.currComponentType)
         currentTime = event.getStartTime()
         if success:
             startEvent = InspectorEvent(currentTime, currentTime, EventType.IS, self.id)
@@ -148,7 +151,7 @@ class Inspector:
             is blocked
         """
         if self.isBlocked:
-            success = self.__iterateThroughBuffers(self.currComponent)
+            success = self.__iterateThroughBuffers(self.currComponentType)
             if success:
                 self.isBlocked = False
                 currentTime = event.getStartTime()
@@ -163,21 +166,22 @@ class Inspector:
         Returns:
             float: The amount of time the inspector will take to clean the component
         """
-        return self.randomNumberGenerators[self.currComponent].generateRandomServiceTime()
+        return self.randomNumberGenerators[self.currComponentType].generateRandomServiceTime()
     
-    def __selectComponentToClean(self) -> Component:
+    def __selectComponentToClean(self) -> ComponentType:
         """If the inspector handles more than one component, randomly select which one to clean.
 
         Returns:
-            Component: The component type to be cleaned
+            ComponentType: The component type to be cleaned
         """
-        return random.choice(self.componentsToHandle)
         
-    def __iterateThroughBuffers(self, componentType: Component) -> bool:
+        return random.choice(self.componentsToHandle) 
+        
+    def __iterateThroughBuffers(self, componentType: ComponentType) -> bool:
         """Iterate through the buffers to see if the inspector can add a component to at least one of them.
 
         Args:
-            componentType (Component): The component type to be added to a buffer
+            componentType (ComponentType): The component type to be added to a buffer
 
         Returns:
             bool: True if the inspector is able to add to the buffer, otherwise False
@@ -186,7 +190,7 @@ class Inspector:
         for buffer in self.buffers:
             if (buffer.getComponentType() == componentType) and not buffer.isFull():
                 print(f"Inspector {self.id} finished cleaning component {componentType} for Buffer {buffer.getId()}")
-                success = buffer.addComponent()
+                success = buffer.addComponent(self.currComponent)
                 if success: 
                     break
         return success
