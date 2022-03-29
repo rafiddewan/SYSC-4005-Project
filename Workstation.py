@@ -15,7 +15,7 @@ class WorkStation:
         Args:
             id (int): The workstation's id. In our simulation this will either be 1, 2 or 3
             numBuffers (int): The number of buffers assigned to this inspector
-            filename (string): Relative Path to the file that contains the workstation's service time data
+            randomNumberGenerator (RandomNumberGenerator): The generator to use to generate service times
         """
 
         self.id = id

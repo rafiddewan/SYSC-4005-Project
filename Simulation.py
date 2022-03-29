@@ -11,7 +11,7 @@ from RandomNumberGeneration import RandomNumberGeneration
 MAX_BUFFER_SIZE = 2
 
 
-def createBuffers()-> List[Buffer]:
+def createBuffers() -> List[Buffer]:
     """
     Creates the buffers for the inspectors and workstations to use.
     Returns:
@@ -30,6 +30,7 @@ def createInspectors(buffers: List[Buffer], seeds: dict[int]) -> List[Inspector]
     Initializes the inspectors.
     Args:
             buffers: The list of buffers the inspectors will use
+            seeds: A dictionary of the seeds that are being used for the simulation
     Returns:
         List[Inspector]: a list containing all inspectors
     """
@@ -47,11 +48,12 @@ def createInspectors(buffers: List[Buffer], seeds: dict[int]) -> List[Inspector]
     return [ins1, ins2]
 
 
-def createWorkstations(buffers: List[Buffer], seeds: List[int])-> List[WorkStation]:
+def createWorkstations(buffers: List[Buffer], seeds: dict[int]) -> List[WorkStation]:
     """
     Initializes the workstations.
     Args:
             buffers: The list of buffers the workstations will use
+            seeds: A dictionary of the seeds that are being used for the simulation
     Returns:
         List[Workstation]: a list containing all workstations
     """
@@ -81,15 +83,15 @@ class Simulation:
         self.time = 60
         self.clock = 0
         self.fel = []
+        self.b = 100000
         g1 = RandomNumberGeneration(0, 0.0)
-        seeds = g1.generateRandomNumberStreams(100000, 6)
-        print(seeds)
+        seeds = g1.generateRandomNumberStreams(self.b, 6)
+        print("Seeds to use: " + str(seeds))
         self.buffers = createBuffers()
         self.inspectors = createInspectors(self.buffers, seeds)
         self.workstations = createWorkstations(self.buffers, seeds)
         self.addStartingEvents()
 
-    
     def addStartingEvents(self):
         """
         Adds the events that are created at the very start of the simulation. 
@@ -191,6 +193,14 @@ class Simulation:
         return events
 
     def addBufferOccupancies(self, timeElapsed):
+        """
+        Iterates over the buffers and calls a method to accumulate the buffer occupancies
+        Args:
+            timeElapsed: The amount of time elapsed since the last calculation
+
+        Returns: None
+
+        """
         for buffer in self.buffers:
             buffer.accumulateOcc(timeElapsed)
 
@@ -207,23 +217,37 @@ class Simulation:
         while not done:
             print("----------------------------------------------------------------")
             event:Event = self.fel.pop(0)
+
             oldClock = self.clock
             newClock = event.getStartTime()
             timeElapsed = newClock - oldClock
-            print("time elapsed = " + str(timeElapsed))
+            print(f"Clock value: {self.clock}")
+            print(f"Time elapsed since last event {timeElapsed}")
             self.addBufferOccupancies(timeElapsed)
             self.clock = newClock
 
             if event.getEventType() == EventType.IS:
+                print(
+                    f"Event: {event.getEventType()} Inspector: {event.getInspectorId()} "
+                    f"Created Time: {event.getCreatedTime()} Start Time: {event.getStartTime()}")
                 events = self.handleInspectorStarted(event)
                 self.addEventsToFEL(events)
             elif event.getEventType() == EventType.ID:
+                print(
+                    f"Event: {event.getEventType()} Inspector: {event.getInspectorId()} "
+                    f"Created Time: {event.getCreatedTime()} Start Time: {event.getStartTime()}")
                 events = self.handleInspectorDone(event)
                 self.addEventsToFEL(events)
             elif event.getEventType() == EventType.WS:
+                print(
+                    f"Event: {event.getEventType()} Workstation: {event.getWorkstationId()} "
+                    f"Created Time: {event.getCreatedTime()} Start Time: {event.getStartTime()}")
                 events = self.handleWorkstationStarted(event)
                 self.addEventsToFEL(events)
             elif event.getEventType() == EventType.WD:
+                print(
+                    f"Event: {event.getEventType()} Workstation: {event.getWorkstationId()} "
+                    f"Created Time: {event.getCreatedTime()} Start Time: {event.getStartTime()}")
                 events = self.handleWorkstationDone(event)
                 self.addEventsToFEL(events)
             elif event.getEventType() == EventType.SD:
@@ -233,32 +257,89 @@ class Simulation:
         print("Simulation successfully completed")
         self.printStatistics()
 
+    def printWorkstationStats(self, workstation):
+        """
+        Print out the statistics of a given workstation
+        Args:
+            workstation: the given workstation
+
+        Returns: None
+
+        """
+        print("Workstation " + str(workstation.getId()) + " is busy " + str(
+            (workstation.getMinutesBusy() / self.time) * 100) + "% of the time.")
+        print("Workstation " + str(workstation.getId()) + " built " + str(
+            workstation.getNumProductsCreated()) + " products.")
+        print("Workstation " + str(workstation.getId()) + " has a throughput of " + str(
+            (workstation.getNumProductsCreated() / self.time) * 100))
+
+    def printInspectorStats(self, inspector):
+        """
+        Print out the statistics of a given inspector
+        Args:
+            inspector: The given inspector
+
+        Returns: None
+
+        """
+        print("Inspector " + str(inspector.getId()) + " has picked up " + str(
+            inspector.getNumComponentsPickedUp()) + " components")
+        print("Inspector " + str(inspector.getId()) + " is blocked " + str(
+            (inspector.getTimeBlocked() / self.time) * 100) + "% of the time.")
+
+    def printBufferStats(self, buffer):
+        """
+        Print out the statistics of a given buffer
+        Args:
+            buffer: The given buffer
+
+         Returns: None
+
+        """
+        print("Buffer " + str(buffer.getId()) + " has an avg buffer occupancy of " + str(
+            buffer.getCummulativeOcc() / self.time))
+        print("Left over buffer size " + str(buffer.getSize()))
+
     def printStatistics(self):
+        """
+        Print out the statistics of the simulation
+        Returns: none
+
+        """
         totalArrivals = 0
         totalCompTime = 0
         totalDepartures = self.workstations[0].getNumProductsCreated() + \
                           (2 * self.workstations[1].getNumProductsCreated()) + \
                           (2 * self.workstations[2].getNumProductsCreated())
+        totalLeftInBuffer = 0
+        totalLeftOverInspectorDoneEvents = 0
+        totalProducts = 0
 
+        print(f"\n---------------------------Individual Statistics---------------------------")
         for workstation in self.workstations:
-            print("Workstation " + str(workstation.getId()) + " is busy " + str((workstation.getMinutesBusy()/self.time) * 100) + "% of the time.")
-            print("Workstation " + str(workstation.getId()) + " built " + str(workstation.getNumProductsCreated()) + " products.")
-            print("Workstation " + str(workstation.getId()) + " has a throughput of " + str((workstation.getNumProductsCreated()/self.time) * 100))
+            self.printWorkstationStats(workstation)
             for comp in workstation.componentsBuilt:
                 time = comp.getDepartureTime() - comp.getArrivalTime()
                 totalCompTime += time
         for inspector in self.inspectors:
-            print("Inspector " + str(inspector.getId()) + " has picked up " + str(inspector.getNumComponentsPickedUp()) + " components")
-            print("Inspector " + str(inspector.getId()) + " is blocked " + str((inspector.getTimeBlocked()/self.time) * 100) + "% of the time.")
+            self.printInspectorStats(inspector)
             totalArrivals += inspector.getNumComponentsPickedUp()
+        print(f"\n")
         for buffer in self.buffers:
-            print("Buffer " + str(buffer.getId()) + " has an avg buffer occupancy of " + str(buffer.getCummulativeOcc()/self.time))
-            print("Buffer size " + str(buffer.getSize()))
-        print("Arrival rate: " + str(totalArrivals))
-        print("Departure rate: " + str(totalDepartures))
-        print("Average Time in System: " + str(totalCompTime/totalDepartures))
-        for e in self.fel:
-            print(e.eventType)
+            self.printBufferStats(buffer)
+            totalLeftInBuffer += buffer.getSize()
+
+        print(f"\n---------------------------Statistics---------------------------")
+        print("Total throughput: " + str(totalProducts/self.time))
+        print("Total Arrivals: " + str(totalArrivals))
+        print("Total Departures: " + str(totalDepartures))
+        print("Left over events: ")
+        for event in self.fel:
+            print(str(event.getEventType()))
+            if event.getEventType() == EventType.ID:
+                totalLeftOverInspectorDoneEvents += 1
+        print("Does input = output? " +
+              str(totalArrivals == (totalDepartures + totalLeftOverInspectorDoneEvents + totalLeftInBuffer)))
 
 
 def main():
