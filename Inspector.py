@@ -6,8 +6,6 @@ from InspectorEvent import InspectorEvent
 from ComponentType import ComponentType
 from WorkstationEvent import WorkstationEvent
 from Component import Component
-import numpy as np
-from RandomNumberGeneration import RandomNumberGeneration
 
 
 class Inspector:
@@ -19,7 +17,7 @@ class Inspector:
             id (int): The inspector's id. In our simulation this will either be 1 or 2
             numBuffers (int): The number of buffers assigned to this inspector
             componentsToHandle (Component[]): The components the inspector is capable of processing
-            seeds (List[int]): Relative path to the file that contains the inspector's cleaning time data
+            generators (List[int]): Number generators to use for each component to handle
         """
         self.id = id
         self.numBuffers = numBuffers
@@ -83,6 +81,12 @@ class Inspector:
         return self.numComponentsPickedUp
 
     def getId(self):
+        """
+        Gets the id of the inspector
+
+        Returns: the id of the inspector
+
+        """
         return self.id
 
     def handleInspectorStarted(self, event: InspectorEvent) -> Event:
@@ -100,7 +104,7 @@ class Inspector:
         """
         if (event.getInspectorId() != self.id) or (self.isBlocked):
             if self.isBlocked: 
-                print(f"Inspector {self.id} is blocked")
+                print(f"Inspector {self.id} is blocked, skipping inspector started event")
             return None
         self.currComponentType = self.__selectComponentToClean()
         self.numComponentsPickedUp += 1
@@ -110,7 +114,7 @@ class Inspector:
         if (self.currComponentType == None):
             raise ValueError("Inspector is not fully configured for use. Please set the components this inspector should handle.")
         
-        print(f"Inspector {self.id} started cleaning {self.currComponent} at {currentTime}")
+        print(f"Inspector {self.id} started cleaning {self.currComponentType} at {currentTime}")
         doneEvent = InspectorEvent(currentTime, (currentTime + cleaningTime), EventType.ID, self.id)
         return doneEvent
     
@@ -132,10 +136,11 @@ class Inspector:
         currentTime = event.getStartTime()
         if success:
             startEvent = InspectorEvent(currentTime, currentTime, EventType.IS, self.id)
-            print(f"Inspector {self.id} finished cleaning {self.currComponent} at {currentTime}")
+            print(f"Inspector {self.id} finished cleaning {self.currComponentType} at {currentTime}")
             return startEvent
         else:
             self.isBlocked = True
+            print(f"Inspector {self.id} is now blocked due to buffers being full")
             self.blockedStartTime = currentTime
             return None
 
@@ -153,6 +158,7 @@ class Inspector:
         if self.isBlocked:
             success = self.__iterateThroughBuffers(self.currComponentType)
             if success:
+                print(f"Inspector {self.id} is now unblocked")
                 self.isBlocked = False
                 currentTime = event.getStartTime()
                 self.timeBlocked += currentTime - self.blockedStartTime
@@ -189,8 +195,8 @@ class Inspector:
         success = False
         for buffer in self.buffers:
             if (buffer.getComponentType() == componentType) and not buffer.isFull():
-                print(f"Inspector {self.id} finished cleaning component {componentType} for Buffer {buffer.getId()}")
                 success = buffer.addComponent(self.currComponent)
-                if success: 
+                if success:
+                    print(f"Inspector {self.id} is adding {componentType} to Buffer {buffer.getId()}")
                     break
         return success
