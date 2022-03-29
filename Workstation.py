@@ -69,6 +69,15 @@ class WorkStation:
         """
 
         return self.isBusy
+
+    def getNumComponents(self) -> int:
+        """
+        Number of components used to create a product for this workstation.
+
+        Returns:
+            int: Number of components used to create a product
+        """
+        return len(self.buffers)
     
     def getNumProductsCreated(self) -> int:
         """
