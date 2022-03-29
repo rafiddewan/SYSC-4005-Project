@@ -333,6 +333,8 @@ class Simulation:
         print("Total throughput: " + str(totalProducts/self.time))
         print("Total Arrivals: " + str(totalArrivals))
         print("Total Departures: " + str(totalDepartures))
+        print("Arrival rate: " + str(totalArrivals/self.time))
+        print("Average Time in System: " + str(totalCompTime/totalDepartures))
         print("Left over events: ")
         for event in self.fel:
             print(str(event.getEventType()))
