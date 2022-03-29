@@ -25,7 +25,7 @@ class WorkStation:
         self.minutesBusy = 0.0
         self.randomNumberGenerator = randomNumberGenerator
         self.currComponents = [None] * numBuffers
-        self.usedComponents = []
+        self.componentsBuilt = []
 
     def getBuffers(self):
         """Get the list of buffers this workstation has
@@ -168,7 +168,7 @@ class WorkStation:
         
         for component in self.currComponents:
             component.setDepartureTime(currentTime)
-            self.usedComponents.append(component)
+            self.componentsBuilt.append(component)
 
         #Calculate how long it took to build the product
         prouductionTime = currentTime - event.getCreatedTime()

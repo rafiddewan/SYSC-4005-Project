@@ -234,6 +234,7 @@ class Simulation:
 
     def printStatistics(self):
         totalArrivals = 0
+        totalCompTime = 0
         totalDepartures = self.workstations[0].getNumProductsCreated() + \
                           (2 * self.workstations[1].getNumProductsCreated()) + \
                           (2 * self.workstations[2].getNumProductsCreated())
@@ -242,10 +243,9 @@ class Simulation:
             print("Workstation " + str(workstation.getId()) + " is busy " + str((workstation.getMinutesBusy()/self.time) * 100) + "% of the time.")
             print("Workstation " + str(workstation.getId()) + " built " + str(workstation.getNumProductsCreated()) + " products.")
             print("Workstation " + str(workstation.getId()) + " has a throughput of " + str((workstation.getNumProductsCreated()/self.time) * 100))
-            print("============================")
-            print("Workstation " + str(workstation.getId()) + " components: ")
-            for comp in workstation.usedComponents:
-                 print("Component time: " + str(comp.getDepartureTime() - comp.getArrivalTime()))
+            for comp in workstation.componentsBuilt:
+                time = comp.getDepartureTime() - comp.getArrivalTime()
+                totalCompTime += time
         for inspector in self.inspectors:
             print("Inspector " + str(inspector.getId()) + " has picked up " + str(inspector.getNumComponentsPickedUp()) + " components")
             print("Inspector " + str(inspector.getId()) + " is blocked " + str((inspector.getTimeBlocked()/self.time) * 100) + "% of the time.")
@@ -255,6 +255,7 @@ class Simulation:
             print("Buffer size " + str(buffer.getSize()))
         print("Arrival rate: " + str(totalArrivals))
         print("Departure rate: " + str(totalDepartures))
+        print("Average Time in System: " + str(totalCompTime/totalDepartures))
         for e in self.fel:
             print(e.eventType)
 
