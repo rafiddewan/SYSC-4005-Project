@@ -101,9 +101,22 @@ class WorkStation:
         return self.minutesBusy
 
     def getGenerator(self):
+        """
+        Get the random number generator associated to this workstation
+        Returns: Random number generator
+
+        """
         return self.randomNumberGenerator
 
     def setSteadyState(self, steadyState):
+        """
+        Set if we are in steady state or not
+        Args:
+            steadyState: True if in steady state
+
+        Returns: None
+
+        """
         self.isSteadyState = steadyState
 
     def handleInspectorDone(self, event: InspectorEvent) -> Event:

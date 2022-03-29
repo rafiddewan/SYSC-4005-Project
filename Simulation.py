@@ -86,10 +86,7 @@ class Simulation:
         self.steadyStateTime = self.time - self.warmup
         self.clock = 0
         self.fel = []
-        # self.b = 100000
-        # g1 = RandomNumberGeneration(0, 0.0)
-        # seeds = g1.generateRandomNumberStreams(self.b, 6)
-        # print("Seeds being used: " + str(seeds))
+
         self.buffers = createBuffers()
         self.inspectors = createInspectors(self.buffers, seeds)
         self.workstations = createWorkstations(self.buffers, seeds)
@@ -212,6 +209,14 @@ class Simulation:
             buffer.accumulateOcc(timeElapsed)
 
     def addAverageInSystem(self,timeElapsed):
+        """
+        Add the amount of components that were in the system during the elapsed time
+        Args:
+            timeElapsed: How much time has elapsed since the last time we checked
+
+        Returns: None
+
+        """
         for buffer in self.buffers:
             self.totalComponentTime += buffer.getSize() * timeElapsed
 
@@ -223,6 +228,11 @@ class Simulation:
                 self.totalComponentTime += workstation.getNumComponents() * timeElapsed
 
     def setSteadyState(self):
+        """
+        Set all the entities to be in steady state
+        Returns: None
+
+        """
         for buffer in self.buffers:
             buffer.setSteadyState(True)
 
@@ -233,9 +243,19 @@ class Simulation:
             workstation.setSteadyState(True)
 
     def getXis(self):
+        """
+        Return all of the xi values for each entity's random number stream
+        Returns: List of Xis
+
+        """
         return self.xis
 
     def grabXis(self):
+        """
+        Grab the current ci values for each entity's random number stream and save it
+        Returns:
+
+        """
         self.xis[0] = self.inspectors[0].getGenerators()[0].getXi()
         self.xis[100000] = self.inspectors[1].getGenerators()[0].getXi()
         self.xis[200000] = self.inspectors[1].getGenerators()[1].getXi()
@@ -401,6 +421,11 @@ class Simulation:
         print("Average Number of Components in the System: " + str(self.totalComponentTime/self.steadyStateTime))
 
     def getStatistics(self):
+        """
+        Store all of the stats we are most interested in into a Replication object
+        Returns: The created Replication object
+
+        """
         replication = Replication()
         totalProducts = 0
         for workstation in self.workstations:

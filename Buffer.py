@@ -99,4 +99,12 @@ class Buffer:
         # print(f"Buffer {self.id} cumulative occupancy is: {self.cumulativeOcc}")
 
     def setSteadyState(self, steadyState):
+        """
+        Set if we are in steady state or not
+        Args:
+            steadyState: True if in steady state
+
+        Returns: None
+
+        """
         self.isSteadyState = steadyState
