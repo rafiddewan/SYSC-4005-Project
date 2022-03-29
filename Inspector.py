@@ -64,12 +64,14 @@ class Inspector:
         """
         self.componentsToHandle
 
-    def getTimeBlocked(self):
+    def getTimeBlocked(self, currTime):
         """Get the amount of time this inspector has been blocked
 
         Returns:
             float: Minutes the inspector has been waiting for a buffer to free up
         """
+        if(self.isBlocked):
+            self.timeBlocked += (currTime - self.blockedStartTime)
         return self.timeBlocked
 
     def getNumComponentsPickedUp(self):
@@ -95,8 +97,9 @@ class Inspector:
             generators.append(self.randomNumberGenerators[componentType])
         return generators
 
-    def resetStats(self):
+    def resetStats(self, currTime):
         self.timeBlocked = 0
+        self.blockedStartTime = currTime
 
     def handleInspectorStarted(self, event: InspectorEvent) -> Event:
         """Select a random cleaning time, select a component to clean, create and return an Inspect Done event to be
