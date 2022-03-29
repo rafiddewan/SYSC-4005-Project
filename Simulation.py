@@ -80,7 +80,7 @@ class Simulation:
         """
         Constructor for a Simulation which will simulate the system.
         """
-        self.time = 10000
+        self.time = 100000
         self.clock = 0
         self.fel = []
         self.b = 100000
@@ -228,40 +228,40 @@ class Simulation:
         """
         done = False
         while not done:
-            print("----------------------------------------------------------------")
+            #print("----------------------------------------------------------------")
             event:Event = self.fel.pop(0)
 
             oldClock = self.clock
             newClock = event.getStartTime()
             timeElapsed = newClock - oldClock
-            print(f"Clock value: {self.clock}")
-            print(f"Time elapsed since last event {timeElapsed}")
+            # print(f"Clock value: {self.clock}")
+            # print(f"Time elapsed since last event {timeElapsed}")
             self.addBufferOccupancies(timeElapsed)
             self.addAverageInSystem(timeElapsed)
             self.clock = newClock
 
             if event.getEventType() == EventType.IS:
-                print(
-                    f"Event: {event.getEventType()} Inspector: {event.getInspectorId()} "
-                    f"Created Time: {event.getCreatedTime()} Start Time: {event.getStartTime()}")
+                # print(
+                #     f"Event: {event.getEventType()} Inspector: {event.getInspectorId()} "
+                #     f"Created Time: {event.getCreatedTime()} Start Time: {event.getStartTime()}")
                 events = self.handleInspectorStarted(event)
                 self.addEventsToFEL(events)
             elif event.getEventType() == EventType.ID:
-                print(
-                    f"Event: {event.getEventType()} Inspector: {event.getInspectorId()} "
-                    f"Created Time: {event.getCreatedTime()} Start Time: {event.getStartTime()}")
+                # print(
+                #     f"Event: {event.getEventType()} Inspector: {event.getInspectorId()} "
+                #     f"Created Time: {event.getCreatedTime()} Start Time: {event.getStartTime()}")
                 events = self.handleInspectorDone(event)
                 self.addEventsToFEL(events)
             elif event.getEventType() == EventType.WS:
-                print(
-                    f"Event: {event.getEventType()} Workstation: {event.getWorkstationId()} "
-                    f"Created Time: {event.getCreatedTime()} Start Time: {event.getStartTime()}")
+                # print(
+                #     f"Event: {event.getEventType()} Workstation: {event.getWorkstationId()} "
+                #     f"Created Time: {event.getCreatedTime()} Start Time: {event.getStartTime()}")
                 events = self.handleWorkstationStarted(event)
                 self.addEventsToFEL(events)
             elif event.getEventType() == EventType.WD:
-                print(
-                    f"Event: {event.getEventType()} Workstation: {event.getWorkstationId()} "
-                    f"Created Time: {event.getCreatedTime()} Start Time: {event.getStartTime()}")
+                # print(
+                #     f"Event: {event.getEventType()} Workstation: {event.getWorkstationId()} "
+                #     f"Created Time: {event.getCreatedTime()} Start Time: {event.getStartTime()}")
                 events = self.handleWorkstationDone(event)
                 self.addEventsToFEL(events)
             elif event.getEventType() == EventType.SD:
