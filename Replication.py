@@ -1,3 +1,5 @@
+import csv
+
 class Replication:
     def __init__(self):
         self.throughput = 0
@@ -45,3 +47,12 @@ class Replication:
 
     def setBatches(self, batches):
         self.batches = batches
+
+    def writeStatsToCsv(self, filename):
+        with open(filename, 'a', encoding='UTF8', newline='') as f:
+            writer = csv.writer(f)            
+            for i  in range(len(self.batches)):
+                batch = self.batches[i]
+                batchRow = batch.getCsvFormattedStats()
+                batchRow.insert(0,str(i+1))
+                writer.writerow(batchRow)

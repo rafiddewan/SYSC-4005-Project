@@ -1,4 +1,4 @@
-
+import csv
 class Batch:
     def __init__(self):
         self.throughput = 0
@@ -35,3 +35,17 @@ class Batch:
         print(f"Probability Workstations Busy: {self.probabilityWorkstationBusy}")
         print(f"Probability Inspectors Blocked: {self.probabilityInspectorBlocked}")
         print(f"Average Buffer Occupancy: {self.avgBufferOccup}")
+
+    def getCsvFormattedStats(self):
+        row = []
+        row.append(self.throughput)
+        for key in self.probabilityWorkstationBusy.keys():
+            row.append(self.probabilityWorkstationBusy[key])
+
+        for key in self.probabilityInspectorBlocked.keys():
+            row.append(self.probabilityInspectorBlocked[key])
+
+        for key in self.avgBufferOccup.keys():
+            row.append(self.avgBufferOccup[key])
+
+        return row
