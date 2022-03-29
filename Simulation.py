@@ -80,7 +80,7 @@ class Simulation:
         """
         Constructor for a Simulation which will simulate the system.
         """
-        self.time = 100000
+        self.time = 600000
         self.clock = 0
         self.fel = []
         self.b = 100000
@@ -328,6 +328,8 @@ class Simulation:
         totalLeftInBuffer = 0
         totalLeftOverInspectorDoneEvents = 0
         totalProducts = 0
+        totalLeftOverWorkstationDoneEvents = 0
+        totalInspectorsBlockedAndHolding = 0
 
         print(f"\n---------------------------Individual Statistics---------------------------")
         for workstation in self.workstations:
@@ -338,6 +340,8 @@ class Simulation:
                 totalCompletedCompTime += time
         for inspector in self.inspectors:
             self.printInspectorStats(inspector)
+            if inspector.isBlocked:
+                totalInspectorsBlockedAndHolding += 1
             totalArrivals += inspector.getNumComponentsPickedUp()
         print(f"\n")
         for buffer in self.buffers:
@@ -346,19 +350,27 @@ class Simulation:
 
         print(f"\n---------------------------Statistics---------------------------")
         print("Total Throughput: " + str(totalProducts/self.time))
-        print("Total Arrivals: " + str(totalArrivals))
+        print(f"\nTotal Arrivals: " + str(totalArrivals))
         print("Total Departures: " + str(totalDepartures))
-        print("Arrival Rate: " + str(totalArrivals/self.time))
-        print("Average Time in System: " + str(totalCompletedCompTime/totalDepartures))
-        print("Arrival Rate * Average Time in System: " + str((totalCompletedCompTime/totalDepartures) * (totalArrivals/self.time)))
-        print("Average Number of Components in the System: " + str(self.totalComponentTime/self.time))
         print("Left over events: ")
         for event in self.fel:
             print(str(event.getEventType()))
             if event.getEventType() == EventType.ID:
                 totalLeftOverInspectorDoneEvents += 1
+            if event.getEventType() == EventType.WD:
+                totalLeftOverWorkstationDoneEvents += len(self.workstations[event.getWorkstationId() - 1].getBuffers())
+        print("Total due to leftover events: " + str(totalLeftOverWorkstationDoneEvents + totalLeftOverInspectorDoneEvents))
+        print("Total left in buffers: " + str(totalLeftInBuffer))
+        print("Total left due to blocked inspectors: " + str(totalInspectorsBlockedAndHolding))
         print("Does input = output? " +
-              str(totalArrivals == (totalDepartures + totalLeftOverInspectorDoneEvents + totalLeftInBuffer)))
+              str(totalArrivals == (totalDepartures + totalLeftOverInspectorDoneEvents + totalLeftInBuffer +
+                                    totalLeftOverWorkstationDoneEvents + totalInspectorsBlockedAndHolding)))
+        print(f"\nLittle's law: ")
+        print("Arrival Rate: " + str(totalArrivals/self.time))
+        print("Average Time in System: " + str(totalCompletedCompTime/totalDepartures))
+        print("Arrival Rate * Average Time in System: " + str((totalCompletedCompTime/totalDepartures) * (totalArrivals/self.time)))
+        print("Average Number of Components in the System: " + str(self.totalComponentTime/self.time))
+
 
 
 def main():
