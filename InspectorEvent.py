@@ -1,4 +1,4 @@
-from Component import Component
+from ComponentType import ComponentType
 from Event import Event
 from EventType import EventType
 

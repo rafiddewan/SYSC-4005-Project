@@ -4,7 +4,7 @@ from Inspector import Inspector
 from InspectorEvent import InspectorEvent
 from Workstation import WorkStation
 from Buffer import Buffer
-from Component import Component
+from ComponentType import ComponentType
 from typing import List
 from RandomNumberGeneration import RandomNumberGeneration
 
@@ -17,11 +17,11 @@ def createBuffers()-> List[Buffer]:
     Returns:
         List[Buffer]: the list containing all buffers
     """
-    buf1 = Buffer(1,MAX_BUFFER_SIZE,Component.C1)
-    buf2 = Buffer(2,MAX_BUFFER_SIZE,Component.C1)
-    buf3 = Buffer(3,MAX_BUFFER_SIZE,Component.C1)
-    buf4 = Buffer(4,MAX_BUFFER_SIZE,Component.C2)
-    buf5 = Buffer(5,MAX_BUFFER_SIZE,Component.C3)
+    buf1 = Buffer(1, MAX_BUFFER_SIZE, ComponentType.C1)
+    buf2 = Buffer(2, MAX_BUFFER_SIZE, ComponentType.C1)
+    buf3 = Buffer(3, MAX_BUFFER_SIZE, ComponentType.C1)
+    buf4 = Buffer(4, MAX_BUFFER_SIZE, ComponentType.C2)
+    buf5 = Buffer(5, MAX_BUFFER_SIZE, ComponentType.C3)
     return [buf1, buf2, buf3, buf4, buf5]
 
 
@@ -34,14 +34,14 @@ def createInspectors(buffers: List[Buffer], seeds: dict[int]) -> List[Inspector]
         List[Inspector]: a list containing all inspectors
     """
     gen1 = RandomNumberGeneration(seeds[0], 0.096545)
-    ins1 = Inspector(1, 3, [Component.C1], [gen1])
+    ins1 = Inspector(1, 3, [ComponentType.C1], [gen1])
     ins1.setBuffer(0, buffers[0])
     ins1.setBuffer(1, buffers[1])
     ins1.setBuffer(2, buffers[2])
 
     gen2 = RandomNumberGeneration(seeds[100000], 0.064363)
     gen3 = RandomNumberGeneration(seeds[200000], 0.048467)
-    ins2 = Inspector(2, 2, [Component.C2, Component.C3], [gen2, gen3])
+    ins2 = Inspector(2, 2, [ComponentType.C2, ComponentType.C3], [gen2, gen3])
     ins2.setBuffer(0, buffers[3])
     ins2.setBuffer(1, buffers[4])
     return [ins1, ins2]
@@ -242,6 +242,10 @@ class Simulation:
             print("Workstation " + str(workstation.getId()) + " is busy " + str((workstation.getMinutesBusy()/self.time) * 100) + "% of the time.")
             print("Workstation " + str(workstation.getId()) + " built " + str(workstation.getNumProductsCreated()) + " products.")
             print("Workstation " + str(workstation.getId()) + " has a throughput of " + str((workstation.getNumProductsCreated()/self.time) * 100))
+            print("============================")
+            print("Workstation " + str(workstation.getId()) + " components: ")
+            for comp in workstation.usedComponents:
+                 print("Component time: " + str(comp.getDepartureTime() - comp.getArrivalTime()))
         for inspector in self.inspectors:
             print("Inspector " + str(inspector.getId()) + " has picked up " + str(inspector.getNumComponentsPickedUp()) + " components")
             print("Inspector " + str(inspector.getId()) + " is blocked " + str((inspector.getTimeBlocked()/self.time) * 100) + "% of the time.")
@@ -251,6 +255,8 @@ class Simulation:
             print("Buffer size " + str(buffer.getSize()))
         print("Arrival rate: " + str(totalArrivals))
         print("Departure rate: " + str(totalDepartures))
+        for e in self.fel:
+            print(e.eventType)
 
 
 def main():

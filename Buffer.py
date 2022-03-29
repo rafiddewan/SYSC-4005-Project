@@ -1,29 +1,31 @@
-from Component import Component
+from ComponentType import ComponentType
 
 
 class Buffer:
 
-    def __init__(self, id, maxSize, componentType: Component):
+    def __init__(self, id, maxSize, componentType: ComponentType):
         self.id = id
         self.maxSize = maxSize
         self.size = 0
         self.componentType = componentType
+        self.componentList = []
         self.cumulativeOcc = 0
     
     def getSize(self):
         return self.size
     
-    def addComponent(self) -> bool:
+    def addComponent(self, component) -> bool:
         if self.size < self.maxSize:
             self.size += 1
+            self.componentList.append(component)
             return True
         return False
 
-    def removeComponent(self) -> bool:
+    def removeComponent(self):
         if self.size > 0:
             self.size -= 1
-            return True
-        return False
+            return self.componentList.pop(0)
+        return None
     
     def isFull(self):
         return self.size == self.maxSize

@@ -1,7 +1,20 @@
-from enum import Enum
+from ComponentType import ComponentType
+import typing
+class Component:
 
+    def __init__(self, arrivalTime:float, componentType:ComponentType):
+        self.arrivalTime = arrivalTime
+        self.componentType = componentType
+        self.departureTime = 100000.0
 
-class Component(Enum):
-    C1 = 1
-    C2 = 2
-    C3 = 3
+    def getComponentType(self) -> ComponentType:
+        return self.componentType
+
+    def getArrivalTime(self) -> float:
+        return self.arrivalTime
+
+    def getDepartureTime(self) -> float: 
+        return self.departureTime
+
+    def setDepartureTime(self, departureTime:float):
+        self.departureTime = departureTime

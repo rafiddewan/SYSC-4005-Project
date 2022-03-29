@@ -24,6 +24,8 @@ class WorkStation:
         self.isBusy = False
         self.minutesBusy = 0.0
         self.randomNumberGenerator = randomNumberGenerator
+        self.currComponents = [None] * numBuffers
+        self.usedComponents = []
 
     def getBuffers(self):
         """Get the list of buffers this workstation has
@@ -135,11 +137,11 @@ class WorkStation:
         currentTime = event.getStartTime()
 
         # Remove a component from each buffer in order to build the product
-        for buffer in self.buffers:
-            if buffer.isEmpty():
+        for i in range(len(self.buffers)):
+            if self.buffers[i].isEmpty():
                 raise ValueError("Buffer is empty it should not be empty")
             else:
-                buffer.removeComponent()
+                self.currComponents[i] = self.buffers[i].removeComponent()
         
         workStationDone = WorkstationEvent(currentTime, currentTime + randomServiceTime, EventType.WD, self.getId())
         return workStationDone
@@ -164,6 +166,10 @@ class WorkStation:
         
         currentTime = event.getStartTime()
         
+        for component in self.currComponents:
+            component.setDepartureTime(currentTime)
+            self.usedComponents.append(component)
+
         #Calculate how long it took to build the product
         prouductionTime = currentTime - event.getCreatedTime()
 
@@ -195,9 +201,7 @@ class WorkStation:
             bool: If the buffers are ready for the workstation to be in motion
         """
 
-        isReady = True
         for buffer in self.buffers:
             if buffer.isEmpty():
-                isReady = False
-                break
-        return isReady
+                return False   
+        return True
