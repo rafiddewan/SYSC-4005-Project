@@ -1,23 +1,23 @@
-class Replication:
+
+class Batch:
     def __init__(self):
         self.throughput = 0
         self.probabilityWorkstationBusy = {}
         self.probabilityInspectorBlocked = {}
         self.avgBufferOccup = {}
-        batches = []
-    
+
     def getThorughput(self) -> float:
         return self.throughput
-    
+
     def setThroughput(self, throughput):
         self.throughput = throughput
 
     def getProbabilityWorkstationBusy(self):
         return self.probabilityWorkstationBusy
-    
+
     def addWorkstationBusyProbability(self, workstationId: int, probability: float):
         self.probabilityWorkstationBusy[workstationId] = probability
-    
+
     def getProbabilityInspectorBlocked(self):
         return self.probabilityInspectorBlocked
 
@@ -26,8 +26,8 @@ class Replication:
 
     def getAvgBufferOccupancy(self):
         return self.avgBufferOccup
-    
-    def addAvgBufferOccupancy(self, bufferId:int, avgBufferOccup: float):
+
+    def addAvgBufferOccupancy(self, bufferId: int, avgBufferOccup: float):
         self.avgBufferOccup[bufferId] = avgBufferOccup
 
     def printStats(self):
@@ -35,13 +35,3 @@ class Replication:
         print(f"Probability Workstations Busy: {self.probabilityWorkstationBusy}")
         print(f"Probability Inspectors Blocked: {self.probabilityInspectorBlocked}")
         print(f"Average Buffer Occupancy: {self.avgBufferOccup}")
-        print(f"\n--------------Batch Stats-----------------")
-        for i in range(len(self.batches)):
-            print(f"\n----------Batch {i+1}-------------")
-            self.batches[i].printStats()
-
-    def getBatches(self):
-        return self.batches
-
-    def setBatches(self, batches):
-        self.batches = batches

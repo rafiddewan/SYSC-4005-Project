@@ -1,3 +1,4 @@
+from Batch import Batch
 from Event import Event
 from EventType import EventType
 from Inspector import Inspector
@@ -84,16 +85,14 @@ class Simulation:
         self.time = 15000
         self.clock = 0
         self.fel = []
-        # self.b = 100000
-        # g1 = RandomNumberGeneration(0, 0.0)
-        # seeds = g1.generateRandomNumberStreams(self.b, 6)
-        # print("Seeds being used: " + str(seeds))
+
         self.buffers = createBuffers()
         self.inspectors = createInspectors(self.buffers, seeds)
         self.workstations = createWorkstations(self.buffers, seeds)
         self.addStartingEvents()
         self.totalComponentTime = 0
         self.xis = {}
+        self.batches = []
 
 
     def addStartingEvents(self):
@@ -103,6 +102,11 @@ class Simulation:
         """
         self.addEventToFEL(InspectorEvent(0, 0, EventType.IS, 1))
         self.addEventToFEL(InspectorEvent(0, 0, EventType.IS, 2))
+
+        batchSize = 1000
+        for i in range(self.time // batchSize):
+            self.addEventToFEL(Event(0, batchSize*(i+1), EventType.B))
+        ## THIS NEEDS TO BE LASTTTTTT
         self.addEventToFEL(Event(0, self.time, EventType.SD))
 
     def addEventToFEL(self, event: Event):
@@ -238,6 +242,14 @@ class Simulation:
         self.xis[400000] = self.workstations[1].getGenerator().getXi()
         self.xis[500000] = self.workstations[2].getGenerator().getXi()
 
+    def resetStats(self):
+        for workstation in self.workstations:
+            workstation.resetStats()
+        for inspector in self.inspectors:
+            inspector.resetStats()
+        for buffer in self.buffers:
+            buffer.resetStats()
+
     def run(self):
         """
         Handles the logic for running the simulation. 
@@ -287,6 +299,23 @@ class Simulation:
                 self.addEventsToFEL(events)
             elif event.getEventType() == EventType.SD:
                 done = True
+            elif event.getEventType() == EventType.B:
+                batch = Batch()
+                totalProducts = 0
+                for workstation in self.workstations:
+                    probabilityWorkstationBusy = (workstation.getMinutesBusy() / self.time) * 100
+                    batch.addWorkstationBusyProbability(workstation.getId(), probabilityWorkstationBusy)
+                    totalProducts += workstation.getNumProductsCreated()
+                for inspector in self.inspectors:
+                    probabilityInspectorBlocked = (inspector.getTimeBlocked() / self.time) * 100
+                    batch.addInspectorBlockedProbability(inspector.getId(), probabilityInspectorBlocked)
+                for buffer in self.buffers:
+                    avgBufferOccup = buffer.getCummulativeOcc() / self.time
+                    batch.addAvgBufferOccupancy(buffer.getId(), avgBufferOccup)
+                throughput = totalProducts / self.time
+                batch.setThroughput(throughput)
+                self.batches.append(batch)
+                self.resetStats()
             else:
                 raise ValueError("Unidentified EventType received.")
         print("Simulation successfully completed")
@@ -408,4 +437,5 @@ class Simulation:
             replication.addAvgBufferOccupancy(buffer.getId(), avgBufferOccup)
         throughput = totalProducts/self.time
         replication.setThroughput(throughput)
+        replication.setBatches(self.batches)
         return replication

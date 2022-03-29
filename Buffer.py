@@ -95,3 +95,6 @@ class Buffer:
         # print(f"Buffer {self.id} size is: {self.size}")
         self.cumulativeOcc = self.cumulativeOcc + (self.getSize() * timeElapsed)
         # print(f"Buffer {self.id} cumulative occupancy is: {self.cumulativeOcc}")
+
+    def resetStats(self):
+        self.cumulativeOcc = 0

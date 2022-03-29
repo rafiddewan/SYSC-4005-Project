@@ -7,3 +7,4 @@ class EventType(Enum):
     WS = "Workstation Started"
     WD = "Workstation Done"
     SD = "Simulation Done"
+    B = "Batch"

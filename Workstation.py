@@ -102,6 +102,10 @@ class WorkStation:
     def getGenerator(self):
         return self.randomNumberGenerator
 
+    def resetStats(self):
+        self.minutesBusy = 0
+        self.numProductsCreated = 0
+
     def handleInspectorDone(self, event: InspectorEvent) -> Event:
         """
         Handles Inspector Done event
