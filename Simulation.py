@@ -321,7 +321,7 @@ class Simulation:
 
         """
         totalArrivals = 0
-        totalCompTime = 0
+        totalCompletedCompTime = 0
         totalDepartures = self.workstations[0].getNumProductsCreated() + \
                           (2 * self.workstations[1].getNumProductsCreated()) + \
                           (2 * self.workstations[2].getNumProductsCreated())
@@ -335,7 +335,7 @@ class Simulation:
             totalProducts += workstation.getNumProductsCreated()
             for comp in workstation.componentsBuilt:
                 time = comp.getDepartureTime() - comp.getArrivalTime()
-                totalCompTime += time
+                totalCompletedCompTime += time
         for inspector in self.inspectors:
             self.printInspectorStats(inspector)
             totalArrivals += inspector.getNumComponentsPickedUp()
@@ -349,8 +349,8 @@ class Simulation:
         print("Total Arrivals: " + str(totalArrivals))
         print("Total Departures: " + str(totalDepartures))
         print("Arrival Rate: " + str(totalArrivals/self.time))
-        print("Average Time in System: " + str(totalCompTime/totalDepartures))
-        print("Arrival Rate * Average Time in System: " + str((totalCompTime/totalDepartures) * (totalArrivals/self.time)))
+        print("Average Time in System: " + str(totalCompletedCompTime/totalDepartures))
+        print("Arrival Rate * Average Time in System: " + str((totalCompletedCompTime/totalDepartures) * (totalArrivals/self.time)))
         print("Average Number of Components in the System: " + str(self.totalComponentTime/self.time))
         print("Left over events: ")
         for event in self.fel:
