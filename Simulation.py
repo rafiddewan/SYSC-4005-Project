@@ -91,6 +91,8 @@ class Simulation:
         self.inspectors = createInspectors(self.buffers, seeds)
         self.workstations = createWorkstations(self.buffers, seeds)
         self.addStartingEvents()
+        self.totalComponentTime = 0
+
 
     def addStartingEvents(self):
         """
@@ -199,10 +201,21 @@ class Simulation:
             timeElapsed: The amount of time elapsed since the last calculation
 
         Returns: None
-
         """
         for buffer in self.buffers:
             buffer.accumulateOcc(timeElapsed)
+
+    def addAverageInSystem(self,timeElapsed):
+        for buffer in self.buffers:
+            self.totalComponentTime += buffer.getSize() * timeElapsed
+
+        for inspector in self.inspectors:
+            self.totalComponentTime += timeElapsed #inspectors always have a component
+
+        for workstation in self.workstations:
+            if(workstation.getIsBusy()):
+                self.totalComponentTime += workstation.getNumComponents() * timeElapsed
+
 
     def run(self):
         """
@@ -224,6 +237,7 @@ class Simulation:
             print(f"Clock value: {self.clock}")
             print(f"Time elapsed since last event {timeElapsed}")
             self.addBufferOccupancies(timeElapsed)
+            self.addAverageInSystem(timeElapsed)
             self.clock = newClock
 
             if event.getEventType() == EventType.IS:
@@ -318,6 +332,7 @@ class Simulation:
         print(f"\n---------------------------Individual Statistics---------------------------")
         for workstation in self.workstations:
             self.printWorkstationStats(workstation)
+            totalProducts += workstation.getNumProductsCreated()
             for comp in workstation.componentsBuilt:
                 time = comp.getDepartureTime() - comp.getArrivalTime()
                 totalCompTime += time
@@ -330,11 +345,13 @@ class Simulation:
             totalLeftInBuffer += buffer.getSize()
 
         print(f"\n---------------------------Statistics---------------------------")
-        print("Total throughput: " + str(totalProducts/self.time))
+        print("Total Throughput: " + str(totalProducts/self.time))
         print("Total Arrivals: " + str(totalArrivals))
         print("Total Departures: " + str(totalDepartures))
-        print("Arrival rate: " + str(totalArrivals/self.time))
+        print("Arrival Rate: " + str(totalArrivals/self.time))
         print("Average Time in System: " + str(totalCompTime/totalDepartures))
+        print("Arrival Rate * Average Time in System: " + str((totalCompTime/totalDepartures) * (totalArrivals/self.time)))
+        print("Average Number of Components in the System: " + str(self.totalComponentTime/self.time))
         print("Left over events: ")
         for event in self.fel:
             print(str(event.getEventType()))
