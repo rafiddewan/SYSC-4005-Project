@@ -25,7 +25,7 @@ class Buffer:
         Returns: True if there is space to add the component, otherwise false
 
         """
-        print(f"Adding to buffer {self.id}")
+        # print(f"Adding to buffer {self.id}")
         if self.size < self.maxSize:
             self.size += 1
             self.componentList.append(component)
@@ -92,6 +92,6 @@ class Buffer:
         Returns: None
 
         """
-        print(f"Buffer {self.id} size is: {self.size}")
+        # print(f"Buffer {self.id} size is: {self.size}")
         self.cumulativeOcc = self.cumulativeOcc + (self.getSize() * timeElapsed)
-        print(f"Buffer {self.id} cumulative occupancy is: {self.cumulativeOcc}")
+        # print(f"Buffer {self.id} cumulative occupancy is: {self.cumulativeOcc}")

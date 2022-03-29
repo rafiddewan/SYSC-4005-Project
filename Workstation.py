@@ -151,7 +151,7 @@ class WorkStation:
                 raise ValueError("Buffer is empty it should not be empty")
             else:
                 self.currComponents[i] = self.buffers[i].removeComponent()
-                print(f"Workstation {self.id} removed component {self.buffers[i].getComponentType()} from Buffer {self.buffers[i].getId()} at {currentTime}")
+                # print(f"Workstation {self.id} removed component {self.buffers[i].getComponentType()} from Buffer {self.buffers[i].getId()} at {currentTime}")
         workStationDone = WorkstationEvent(currentTime, currentTime + randomServiceTime, EventType.WD, self.getId())
         return workStationDone
 
@@ -186,7 +186,7 @@ class WorkStation:
 
         startEvent = None
 
-        print(f"Workstation {self.id} finished assembly at {currentTime}")
+        # print(f"Workstation {self.id} finished assembly at {currentTime}")
 
         #Create the workstation started event only if the buffers are ready and if the workstation is free
         if self.__buffersAreReady() and not self.getIsBusy():

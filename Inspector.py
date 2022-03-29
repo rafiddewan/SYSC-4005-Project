@@ -103,8 +103,9 @@ class Inspector:
             Event: An Inspector Done event to be added to the Simulation's future event list
         """
         if (event.getInspectorId() != self.id) or (self.isBlocked):
-            if self.isBlocked: 
-                print(f"Inspector {self.id} is blocked, skipping inspector started event")
+            if self.isBlocked:
+                pass
+                # print(f"Inspector {self.id} is blocked, skipping inspector started event")
             return None
         self.currComponentType = self.__selectComponentToClean()
         self.numComponentsPickedUp += 1
@@ -114,7 +115,7 @@ class Inspector:
         if (self.currComponentType == None):
             raise ValueError("Inspector is not fully configured for use. Please set the components this inspector should handle.")
         
-        print(f"Inspector {self.id} started cleaning {self.currComponentType} at {currentTime}")
+        # print(f"Inspector {self.id} started cleaning {self.currComponentType} at {currentTime}")
         doneEvent = InspectorEvent(currentTime, (currentTime + cleaningTime), EventType.ID, self.id)
         return doneEvent
     
@@ -136,11 +137,11 @@ class Inspector:
         currentTime = event.getStartTime()
         if success:
             startEvent = InspectorEvent(currentTime, currentTime, EventType.IS, self.id)
-            print(f"Inspector {self.id} finished cleaning {self.currComponentType} at {currentTime}")
+            # print(f"Inspector {self.id} finished cleaning {self.currComponentType} at {currentTime}")
             return startEvent
         else:
             self.isBlocked = True
-            print(f"Inspector {self.id} is now blocked due to buffers being full")
+            # print(f"Inspector {self.id} is now blocked due to buffers being full")
             self.blockedStartTime = currentTime
             return None
 
@@ -158,7 +159,7 @@ class Inspector:
         if self.isBlocked:
             success = self.__iterateThroughBuffers(self.currComponentType)
             if success:
-                print(f"Inspector {self.id} is now unblocked")
+                # print(f"Inspector {self.id} is now unblocked")
                 self.isBlocked = False
                 currentTime = event.getStartTime()
                 self.timeBlocked += currentTime - self.blockedStartTime
@@ -197,6 +198,6 @@ class Inspector:
             if (buffer.getComponentType() == componentType) and not buffer.isFull():
                 success = buffer.addComponent(self.currComponent)
                 if success:
-                    print(f"Inspector {self.id} is adding {componentType} to Buffer {buffer.getId()}")
+                    # print(f"Inspector {self.id} is adding {componentType} to Buffer {buffer.getId()}")
                     break
         return success
