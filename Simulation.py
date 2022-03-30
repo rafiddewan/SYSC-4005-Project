@@ -83,7 +83,7 @@ class Simulation:
         """
         Constructor for a Simulation which will simulate the system.
         """
-        self.time = 750
+        self.time = 10000
         self.clock = 0
         self.fel = []
 
