@@ -81,8 +81,8 @@ class Simulation:
         """
         Constructor for a Simulation which will simulate the system.
         """
-        self.time = 15000
-        self.warmup = 1000
+        self.time = 6600
+        self.warmup = 600
         self.steadyStateTime = self.time - self.warmup
         self.clock = 0
         self.fel = []
