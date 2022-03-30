@@ -8,6 +8,11 @@ class Performance:
         self.numReplications = numReplications
 
     def run(self):
+        """
+        Run the specified number of replications and keep track of each one
+        Returns: None
+
+        """
         g1 = RandomNumberGeneration(0, 0.0)
         seeds = g1.generateRandomNumberStreams(100000, 6)
         for x in range(self.numReplications):

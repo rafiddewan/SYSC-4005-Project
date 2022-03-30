@@ -10,6 +10,7 @@ class Buffer:
         self.componentType = componentType
         self.componentList = []
         self.cumulativeOcc = 0
+        self.isSteadyState = False
     
     def getSize(self):
         """
@@ -93,5 +94,17 @@ class Buffer:
 
         """
         # print(f"Buffer {self.id} size is: {self.size}")
-        self.cumulativeOcc = self.cumulativeOcc + (self.getSize() * timeElapsed)
+        if self.isSteadyState:
+            self.cumulativeOcc = self.cumulativeOcc + (self.getSize() * timeElapsed)
         # print(f"Buffer {self.id} cumulative occupancy is: {self.cumulativeOcc}")
+
+    def setSteadyState(self, steadyState):
+        """
+        Set if we are in steady state or not
+        Args:
+            steadyState: True if in steady state
+
+        Returns: None
+
+        """
+        self.isSteadyState = steadyState

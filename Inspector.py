@@ -32,6 +32,7 @@ class Inspector:
         self.currComponentType = None
         self.numComponentsPickedUp = 0
         self.currComponent = None
+        self.isSteadyState = False
 
     def getBuffers(self):
         """Get the list of buffers this inspector has
@@ -90,10 +91,26 @@ class Inspector:
         return self.id
 
     def getGenerators(self):
+        """
+        Get the random number generators associated with this inspector
+        Returns: Dictionary of random number generators for each component type, key = the component type
+
+        """
         generators = []
         for componentType in self.componentsToHandle:
             generators.append(self.randomNumberGenerators[componentType])
         return generators
+
+    def setSteadyState(self, steadyState):
+        """
+        Set if we are in steady state or not
+        Args:
+            steadyState: True if in steady state
+
+        Returns: None
+
+        """
+        self.isSteadyState = steadyState
 
     def handleInspectorStarted(self, event: InspectorEvent) -> Event:
         """Select a random cleaning time, select a component to clean, create and return an Inspect Done event to be
@@ -168,7 +185,8 @@ class Inspector:
                 # print(f"Inspector {self.id} is now unblocked")
                 self.isBlocked = False
                 currentTime = event.getStartTime()
-                self.timeBlocked += currentTime - self.blockedStartTime
+                if self.isSteadyState:
+                    self.timeBlocked += currentTime - self.blockedStartTime
                 startEvent = InspectorEvent(currentTime, currentTime, EventType.IS, self.id)
                 return startEvent
         return None
