@@ -34,3 +34,16 @@ class Replication:
         print(f"Probability Workstations Busy: {self.probabilityWorkstationBusy}")
         print(f"Probability Inspectors Blocked: {self.probabilityInspectorBlocked}")
         print(f"Average Buffer Occupancy: {self.avgBufferOccup}")
+
+    def getReplicationData(self):
+        data = []
+        data.append(self.throughput)
+        for key in self.probabilityWorkstationBusy.keys():
+            data.append(self.probabilityWorkstationBusy[key])
+
+        for key in self.probabilityInspectorBlocked.keys():
+            data.append(self.probabilityInspectorBlocked[key])
+
+        for key in self.avgBufferOccup.keys():
+            data.append(self.avgBufferOccup[key])
+        return data
