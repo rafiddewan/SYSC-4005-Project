@@ -15,7 +15,7 @@ class Performance:
 
         """
         g1 = RandomNumberGeneration(0, 0.0)
-        seeds = g1.generateRandomNumberStreams(100000, 6)
+        seeds = g1.generateRandomNumberStreams(100000, 7)
         filename = "Replication_Output.csv"
         with open(filename, 'w', encoding='UTF8', newline='') as f:
             writer = csv.writer(f)

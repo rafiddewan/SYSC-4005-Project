@@ -30,7 +30,7 @@ class RandomNumberGeneration:
         Returns: A random number that follows the exponential distribution
 
         """
-        self.__lcm()
+        self.lcm()
         self.ri = self.xi / (self.m + 1)
         serviceTime = ((-1)/self.lmbda) * np.log(self.ri)
         return serviceTime
@@ -52,15 +52,16 @@ class RandomNumberGeneration:
         currJ = 0
         for i in range(numBlocks):
             for j in range(currJ, i*b):
-                self.__lcm()
+                self.lcm()
             currJ = i*b
             seeds[currJ] = self.xi
         return seeds
 
-    def __lcm(self):
+    def lcm(self):
         """
         Lowest congruential method to generate random numbers
         Returns: A random number
 
         """
         self.xi = (self.a * self.xi + self.c) % self.m
+        return self.xi
