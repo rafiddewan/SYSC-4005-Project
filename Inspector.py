@@ -29,6 +29,8 @@ class Inspector:
         self.randomNumberGenerators = {}
         for i in range(len(componentsToHandle)): #populate dict with key as component and value as the random num generator
             self.randomNumberGenerators[componentsToHandle[i]] = generators[i]
+        if len(componentsToHandle) > 1:
+            self.randomNumberGenerators["choose component"] = generators[len(componentsToHandle)]
         self.currComponentType = None
         self.numComponentsPickedUp = 0
         self.currComponent = None
@@ -99,6 +101,8 @@ class Inspector:
         generators = []
         for componentType in self.componentsToHandle:
             generators.append(self.randomNumberGenerators[componentType])
+        if self.randomNumberGenerators.get("choose component"):
+            generators.append(self.randomNumberGenerators.get("choose component"))
         return generators
 
     def setSteadyState(self, steadyState):
@@ -205,8 +209,11 @@ class Inspector:
         Returns:
             ComponentType: The component type to be cleaned
         """
-        
-        return random.choice(self.componentsToHandle) 
+        if self.randomNumberGenerators.get("choose component"):
+            randomNum = self.randomNumberGenerators.get("choose component").lcm()
+            return self.componentsToHandle[randomNum % len(self.componentsToHandle)]
+        else:
+            return self.componentsToHandle[0]
         
     def __iterateThroughBuffers(self, componentType: ComponentType) -> bool:
         """Iterate through the buffers to see if the inspector can add a component to at least one of them.

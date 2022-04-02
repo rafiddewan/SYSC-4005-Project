@@ -43,7 +43,8 @@ def createInspectors(buffers: List[Buffer], seeds: dict[int]) -> List[Inspector]
 
     gen2 = RandomNumberGeneration(seeds[100000], 0.064363)
     gen3 = RandomNumberGeneration(seeds[200000], 0.048467)
-    ins2 = Inspector(2, 2, [ComponentType.C2, ComponentType.C3], [gen2, gen3])
+    gen4 = RandomNumberGeneration(seeds[600000], 0.0)
+    ins2 = Inspector(2, 2, [ComponentType.C2, ComponentType.C3], [gen2, gen3, gen4])
     ins2.setBuffer(0, buffers[3])
     ins2.setBuffer(1, buffers[4])
     return [ins1, ins2]
@@ -262,6 +263,7 @@ class Simulation:
         self.xis[300000] = self.workstations[0].getGenerator().getXi()
         self.xis[400000] = self.workstations[1].getGenerator().getXi()
         self.xis[500000] = self.workstations[2].getGenerator().getXi()
+        self.xis[600000] = self.inspectors[1].getGenerators()[2].getXi()
 
     def run(self):
         """
