@@ -10,7 +10,7 @@ from Component import Component
 
 class Inspector:
 
-    def __init__(self, id, numBuffers, componentsToHandle, generators):
+    def __init__(self, id, numBuffers, componentsToHandle, generators, roundRobinPolicy):
         """Initialize an inspector
 
         Args:
@@ -18,6 +18,8 @@ class Inspector:
             numBuffers (int): The number of buffers assigned to this inspector
             componentsToHandle (Component[]): The components the inspector is capable of processing
             generators (List[int]): Number generators to use for each component to handle
+            roundRobinPolicy: The operating policy which will be used to deliver components to buffers.
+                        If True, uses round robin policy. Otherwise uses the original priority policy
         """
         self.id = id
         self.numBuffers = numBuffers
@@ -35,6 +37,8 @@ class Inspector:
         self.numComponentsPickedUp = 0
         self.currComponent = None
         self.isSteadyState = False
+        self.roundRobinPolicy = roundRobinPolicy
+        self.currStartIdx = 0
 
     def getBuffers(self):
         """Get the list of buffers this inspector has
@@ -130,9 +134,7 @@ class Inspector:
             Event: An Inspector Done event to be added to the Simulation's future event list
         """
         if (event.getInspectorId() != self.id) or (self.isBlocked):
-            if self.isBlocked:
-                pass
-                # print(f"Inspector {self.id} is blocked, skipping inspector started event")
+            # print(f"Inspector {self.id} is blocked, skipping inspector started event")
             return None
         self.currComponentType = self.__selectComponentToClean()
         self.numComponentsPickedUp += 1
@@ -225,10 +227,13 @@ class Inspector:
             bool: True if the inspector is able to add to the buffer, otherwise False
         """
         success = False
-        for buffer in self.buffers:
+        for i in range(self.numBuffers):
+            buffer = self.buffers[(self.currStartIdx + i) % self.numBuffers]
             if (buffer.getComponentType() == componentType) and not buffer.isFull():
                 success = buffer.addComponent(self.currComponent)
                 if success:
                     # print(f"Inspector {self.id} is adding {componentType} to Buffer {buffer.getId()}")
+                    if(self.roundRobinPolicy):
+                        self.currStartIdx = (self.currStartIdx + i + 1) % self.numBuffers
                     break
         return success

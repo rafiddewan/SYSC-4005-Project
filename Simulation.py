@@ -11,7 +11,6 @@ from RandomNumberGeneration import RandomNumberGeneration
 
 MAX_BUFFER_SIZE = 2
 
-
 def createBuffers() -> List[Buffer]:
     """
     Creates the buffers for the inspectors and workstations to use.
@@ -26,17 +25,19 @@ def createBuffers() -> List[Buffer]:
     return [buf1, buf2, buf3, buf4, buf5]
 
 
-def createInspectors(buffers: List[Buffer], seeds: dict[int]) -> List[Inspector]:
+def createInspectors(buffers: List[Buffer], seeds: dict[int], isRoundRobin: bool) -> List[Inspector]:
     """
     Initializes the inspectors.
     Args:
             buffers: The list of buffers the inspectors will use
             seeds: A dictionary of the seeds that are being used for the simulation
+            isRoundRobin: The operating policy which the inspectors will use to deliver components to buffers.
+                        If True, uses round robin policy. Otherwise uses the original priority policy
     Returns:
         List[Inspector]: a list containing all inspectors
     """
     gen1 = RandomNumberGeneration(seeds[0], 0.096545)
-    ins1 = Inspector(1, 3, [ComponentType.C1], [gen1])
+    ins1 = Inspector(1, 3, [ComponentType.C1], [gen1], isRoundRobin)
     ins1.setBuffer(0, buffers[0])
     ins1.setBuffer(1, buffers[1])
     ins1.setBuffer(2, buffers[2])
@@ -44,7 +45,7 @@ def createInspectors(buffers: List[Buffer], seeds: dict[int]) -> List[Inspector]
     gen2 = RandomNumberGeneration(seeds[100000], 0.064363)
     gen3 = RandomNumberGeneration(seeds[200000], 0.048467)
     gen4 = RandomNumberGeneration(seeds[600000], 0.0)
-    ins2 = Inspector(2, 2, [ComponentType.C2, ComponentType.C3], [gen2, gen3, gen4])
+    ins2 = Inspector(2, 2, [ComponentType.C2, ComponentType.C3], [gen2, gen3, gen4], isRoundRobin)
     ins2.setBuffer(0, buffers[3])
     ins2.setBuffer(1, buffers[4])
     return [ins1, ins2]
@@ -78,7 +79,7 @@ def createWorkstations(buffers: List[Buffer], seeds: dict[int]) -> List[WorkStat
 
 class Simulation:
 
-    def __init__(self, seeds):
+    def __init__(self, seeds, isRoundRobin):
         """
         Constructor for a Simulation which will simulate the system.
         """
@@ -89,7 +90,7 @@ class Simulation:
         self.fel = []
 
         self.buffers = createBuffers()
-        self.inspectors = createInspectors(self.buffers, seeds)
+        self.inspectors = createInspectors(self.buffers, seeds, isRoundRobin)
         self.workstations = createWorkstations(self.buffers, seeds)
         self.addStartingEvents()
         self.totalComponentTime = 0
