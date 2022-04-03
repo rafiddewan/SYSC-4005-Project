@@ -18,7 +18,7 @@ class Event:
         """Get the time this event was created at
 
         Returns:
-             (float) : The time this event was created at
+            (float) : The time this event was created at
         """
         return self.createdTime
     

@@ -4,18 +4,19 @@ from Buffer import Buffer
 from Event import Event
 from EventType import EventType
 from InspectorEvent import InspectorEvent
+from RandomNumberGeneration import RandomNumberGeneration
 from WorkstationEvent import WorkstationEvent
 import numpy as np
 
 class WorkStation:
     
-    def __init__(self, id, numBuffers, randomNumberGenerator):
+    def __init__(self, id:int, numBuffers:int, randomNumberGenerator:RandomNumberGeneration):
         """Workstation constructor
 
         Args:
             id (int): The workstation's id. In our simulation this will either be 1, 2 or 3
             numBuffers (int): The number of buffers assigned to this inspector
-            randomNumberGenerator (RandomNumberGenerator): The generator to use to generate service times
+            randomNumberGenerator (RandomNumberGeneration): The generator to use to generate service times
         """
 
         self.id = id
@@ -100,7 +101,7 @@ class WorkStation:
 
         return self.minutesBusy
 
-    def getGenerator(self):
+    def getGenerator(self) -> RandomNumberGeneration:
         """
         Get the random number generator associated to this workstation
         Returns: Random number generator
@@ -108,14 +109,11 @@ class WorkStation:
         """
         return self.randomNumberGenerator
 
-    def setSteadyState(self, steadyState):
+    def setSteadyState(self, steadyState:bool):
         """
         Set if we are in steady state or not
         Args:
             steadyState: True if in steady state
-
-        Returns: None
-
         """
         self.isSteadyState = steadyState
 

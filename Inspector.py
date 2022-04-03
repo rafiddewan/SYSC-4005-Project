@@ -5,6 +5,8 @@ from InspectorEvent import InspectorEvent
 from ComponentType import ComponentType
 from WorkstationEvent import WorkstationEvent
 from Component import Component
+from typing import Dict
+from typing import List
 
 
 class Inspector:
@@ -62,7 +64,7 @@ class Inspector:
             return True
         return False
     
-    def getComponentsToHandle(self):
+    def getComponentsToHandle(self) -> List[Component]:
         """Get the list of components handled by this inspector
 
         Returns:
@@ -70,7 +72,7 @@ class Inspector:
         """
         self.componentsToHandle
 
-    def getTimeBlocked(self):
+    def getTimeBlocked(self) -> float:
         """Get the amount of time this inspector has been blocked
 
         Returns:
@@ -78,7 +80,7 @@ class Inspector:
         """
         return self.timeBlocked
 
-    def getNumComponentsPickedUp(self):
+    def getNumComponentsPickedUp(self) -> int:
         """Get the amount of components picked up by the inspector
 
         Returns:
@@ -86,7 +88,7 @@ class Inspector:
         """
         return self.numComponentsPickedUp
 
-    def getId(self):
+    def getId(self)-> int:
         """
         Gets the id of the inspector
 
@@ -95,7 +97,7 @@ class Inspector:
         """
         return self.id
 
-    def getGenerators(self):
+    def getGenerators(self) -> Dict:
         """
         Get the random number generators associated with this inspector
         Returns: Dictionary of random number generators for each component type, key = the component type
@@ -108,14 +110,11 @@ class Inspector:
             generators.append(self.randomNumberGenerators.get("choose component"))
         return generators
 
-    def setSteadyState(self, steadyState):
+    def setSteadyState(self, steadyState:bool):
         """
         Set if we are in steady state or not
         Args:
             steadyState: True if in steady state
-
-        Returns: None
-
         """
         self.isSteadyState = steadyState
 
@@ -148,7 +147,8 @@ class Inspector:
         return doneEvent
     
     def handleInspectorDone(self, event: InspectorEvent) -> Event:
-        """Iterate through the buffers to see if we can add a component to one of them. If we can then create the next
+        """
+        Iterate through the buffers to see if we can add a component to one of them. If we can then create the next
         InspectorStarted event, otherwise set inspector as blocked
 
         Args:
