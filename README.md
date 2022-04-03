@@ -19,5 +19,4 @@ To run the alternative policy of the simulation you need to make sure that on Pe
 This will then generate the production run of the simulation in a CSV called ***RoundRobin_Production_Run.csv***
 
 ## Running Performance.py
-To run the Performance.py just run the following command:
-``` python Performance.py``` to generate the production run
+To run the Performance.py you must be using Python 3.
