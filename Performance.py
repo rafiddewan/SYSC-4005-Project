@@ -2,6 +2,7 @@ from RandomNumberGeneration import RandomNumberGeneration
 from Simulation import Simulation
 import csv
 
+IS_ROUND_ROBIN = True
 
 class Performance:
     def __init__(self, numReplications: int):
@@ -14,15 +15,15 @@ class Performance:
         """
         g1 = RandomNumberGeneration(0, 0.0)
         seeds = g1.generateRandomNumberStreams(100000, 7)
-        filename = "Replication_Output.csv"
+
+        filename = "RoundRobin_Production_Run.csv" if IS_ROUND_ROBIN else "Priority_Queue_Production_Run.csv"
         with open(filename, 'w', encoding='UTF8', newline='') as f:
             writer = csv.writer(f)
             writer.writerow(self.getHeaders())
             for x in range(self.numReplications):
                 print(f"\n------------------------------------Replication {x + 1}------------------------------------")
                 print(f"\nSeeds being used: " + str(seeds))
-                sim = Simulation(seeds, True)
-
+                sim = Simulation(seeds, IS_ROUND_ROBIN)
                 sim.run()
                 seeds = sim.getXis()
                 replication = sim.getStatistics()
