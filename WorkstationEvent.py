@@ -4,7 +4,7 @@ from EventType import EventType
 
 class WorkstationEvent(Event):
     def __init__(self, createdTime: float, startTime: float, eventType: EventType, workstationId: int):
-        """Initialize an inspector event
+        """Initialize an workstation event
 
         Args:
             createdTime (float): The time the event was created at
