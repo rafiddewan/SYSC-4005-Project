@@ -112,7 +112,7 @@ class Simulation:
         """
         Adds the given event to the future event list and sorts the list based on the start time of the events
         Args:
-                event: The event that will be added to the future event list
+            event: The event that will be added to the future event list
         """
         self.fel.append(event)
         self.fel.sort(key=lambda e: e.getStartTime()) #sort fel by the start times
@@ -121,7 +121,7 @@ class Simulation:
         """
         Adds the given events to the future event list and sorts the list based on the start time of the events
         Args:
-                events: The event list that will be added to the future event list
+            events: The event list that will be added to the future event list
         """
         for event in events:
             self.fel.append(event)
@@ -132,7 +132,7 @@ class Simulation:
         Handles the logic for when an inspector started event is next.
         Passes the event to all inspectors to handle individually.
         Args:
-                event: The event that is to be handled
+            event: The event that is to be handled
         Returns:
             List[Event]: a list containing Events from the inspectors
         """
@@ -168,7 +168,7 @@ class Simulation:
         Handles the logic for when an Workstation Started event is next.
         Passes the event to all inspectors and workstations to handle individually.
         Args:
-                event: The event that is to be handled
+            event: The event that is to be handled
         Returns:
             List[Event]: a list containing Events from the inspectors and workstations
         """
@@ -188,7 +188,7 @@ class Simulation:
         Handles the logic for when an Workstation Done event is next.
         Passes the event to all workstations to handle individually.
         Args:
-                event: The event that is to be handled
+            event: The event that is to be handled
         Returns:
             List[Event]: a list containing Events from the workstations
         """
@@ -199,25 +199,20 @@ class Simulation:
                 events.append(newEvent)
         return events
 
-    def addBufferOccupancies(self, timeElapsed):
+    def addBufferOccupancies(self, timeElapsed:float):
         """
         Iterates over the buffers and calls a method to accumulate the buffer occupancies
         Args:
             timeElapsed: The amount of time elapsed since the last calculation
-
-        Returns: None
         """
         for buffer in self.buffers:
             buffer.accumulateOcc(timeElapsed)
 
-    def addAverageInSystem(self,timeElapsed):
+    def addAverageInSystem(self, timeElapsed:float):
         """
         Add the amount of components that were in the system during the elapsed time
         Args:
             timeElapsed: How much time has elapsed since the last time we checked
-
-        Returns: None
-
         """
         for buffer in self.buffers:
             self.totalComponentTime += buffer.getSize() * timeElapsed
@@ -232,8 +227,6 @@ class Simulation:
     def setSteadyState(self):
         """
         Set all the entities to be in steady state
-        Returns: None
-
         """
         for buffer in self.buffers:
             buffer.setSteadyState(True)
@@ -323,14 +316,11 @@ class Simulation:
         self.grabXis()
         # self.printStatistics()
 
-    def printWorkstationStats(self, workstation):
+    def printWorkstationStats(self, workstation:WorkStation):
         """
         Print out the statistics of a given workstation
         Args:
             workstation: the given workstation
-
-        Returns: None
-
         """
         print("Workstation " + str(workstation.getId()) + " is busy " + str(
             (workstation.getMinutesBusy() / self.steadyStateTime) * 100) + "% of the time.")
@@ -339,7 +329,7 @@ class Simulation:
         print("Workstation " + str(workstation.getId()) + " has a throughput of " + str(
             (workstation.getNumProductsCreated() / self.steadyStateTime) * 100))
 
-    def printInspectorStats(self, inspector):
+    def printInspectorStats(self, inspector:Inspector):
         """
         Print out the statistics of a given inspector
         Args:
@@ -353,7 +343,7 @@ class Simulation:
         print("Inspector " + str(inspector.getId()) + " is blocked " + str(
             (inspector.getTimeBlocked() / self.steadyStateTime) * 100) + "% of the time.")
 
-    def printBufferStats(self, buffer):
+    def printBufferStats(self, buffer:Buffer):
         """
         Print out the statistics of a given buffer
         Args:
@@ -426,8 +416,8 @@ class Simulation:
     def getStatistics(self):
         """
         Store all of the stats we are most interested in into a Replication object
-        Returns: The created Replication object
-
+        Returns: 
+            (Replication): The created Replication object
         """
         replication = Replication()
         totalProducts = 0

@@ -5,22 +5,19 @@ class Replication:
         self.probabilityInspectorBlocked = {}
         self.avgBufferOccup = {}
     
-    def getThorughput(self) -> float:
+    def getThroughput(self) -> float:
         """
         Get throughput
-        Returns: throughput
-
+        Returns: 
+            float: throughput
         """
         return self.throughput
     
-    def setThroughput(self, throughput):
+    def setThroughput(self, throughput:float):
         """
         Set throughput
         Args:
-            throughput:
-
-        Returns: None
-
+            throughput(float): the throughput
         """
         self.throughput = throughput
 
@@ -28,7 +25,6 @@ class Replication:
         """
         Get dictionary of workstations and probability they are busy for each
         Returns: Dictionary of workstations ids + probabilities
-
         """
         return self.probabilityWorkstationBusy
     
@@ -36,11 +32,8 @@ class Replication:
         """
         Add a probability for a workstation into the dictionary
         Args:
-            workstationId: workstation id
-            probability: probability the workstation is busy
-
-        Returns: None
-
+            workstationId(int): workstation id
+            probability(float): probability the workstation is busy
         """
         self.probabilityWorkstationBusy[workstationId] = probability
     
@@ -56,11 +49,8 @@ class Replication:
         """
         Add an inpsector the probability that it is blocked
         Args:
-            inspectorId: Inspector id
-            probability: probability that the inspector is blocked
-
-        Returns: None
-
+            inspectorId(int): Inspector id
+            probability(float): probability that the inspector is blocked
         """
         self.probabilityInspectorBlocked[inspectorId] = probability
 
@@ -76,19 +66,14 @@ class Replication:
         """
         Add a buffer occupancy into the dictionary
         Args:
-            bufferId: Buffer id
-            avgBufferOccup:average buffer occupancy
-
-        Returns: None
-
+            bufferId(int): Buffer id
+            avgBufferOccup(float):average buffer occupancy
         """
         self.avgBufferOccup[bufferId] = avgBufferOccup
 
     def printStats(self):
         """
         Print stats for this replication
-        Returns: None
-
         """
         print(f"Throughput: {self.throughput}")
         print(f"Probability Workstations Busy: {self.probabilityWorkstationBusy}")
@@ -96,6 +81,10 @@ class Replication:
         print(f"Average Buffer Occupancy: {self.avgBufferOccup}")
 
     def getReplicationData(self):
+        """
+        Gets a list of all the quantities of interest for this replication.
+        Returns: List of all the quantities of interest for this replication.
+        """
         data = []
         data.append(self.throughput)
         for key in self.probabilityWorkstationBusy.keys():

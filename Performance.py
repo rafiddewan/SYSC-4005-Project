@@ -4,15 +4,13 @@ import csv
 
 
 class Performance:
-    def __init__(self, numReplications):
+    def __init__(self, numReplications: int):
         self.replications = []
         self.numReplications = numReplications
 
     def run(self):
         """
         Run the specified number of replications and keep track of each one
-        Returns: None
-
         """
         g1 = RandomNumberGeneration(0, 0.0)
         seeds = g1.generateRandomNumberStreams(100000, 7)
@@ -23,7 +21,7 @@ class Performance:
             for x in range(self.numReplications):
                 print(f"\n------------------------------------Replication {x + 1}------------------------------------")
                 print(f"\nSeeds being used: " + str(seeds))
-                sim = Simulation(seeds, False)
+                sim = Simulation(seeds, True)
 
                 sim.run()
                 seeds = sim.getXis()
@@ -35,9 +33,15 @@ class Performance:
                 writer.writerow(row)
 
     def getHeaders(self):
+        """
+        Gets the headers used in the output csv file
+        returns:
+            String[]: the headers for the output csv file
+        """
         return ['Replication #', 'Throughput', 'Workstation 1 Busy Prob', 'Workstation 2 Busy Prob', 'Workstation 3 Busy Prob',
          'Inspector 1 Blocked Prob', 'Inspector 2 Blocked Prob', 'Buffer 1 Occupancy Average','Buffer 2 Occupancy Average', 'Buffer 3 Occupancy Average',
          'Buffer 4 Occupancy Average', 'Buffer 5 Occupancy Average']
+
 def main():
     per = Performance(20)
     per.run()
