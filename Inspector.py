@@ -1,4 +1,3 @@
-import random
 from Buffer import Buffer
 from Event import Event
 from EventType import EventType
