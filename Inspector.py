@@ -227,7 +227,6 @@ class Inspector:
             bool: True if the inspector is able to add to the buffer, otherwise False
         """
         success = False
-        numBuffers = len(self.buffers)
         for i in range(self.numBuffers):
             buffer = self.buffers[(self.currStartIdx + i) % self.numBuffers]
             if (buffer.getComponentType() == componentType) and not buffer.isFull():
