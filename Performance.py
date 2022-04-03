@@ -23,7 +23,7 @@ class Performance:
             for x in range(self.numReplications):
                 print(f"\n------------------------------------Replication {x + 1}------------------------------------")
                 print(f"\nSeeds being used: " + str(seeds))
-                sim = Simulation(seeds)
+                sim = Simulation(seeds, False)
 
                 sim.run()
                 seeds = sim.getXis()
@@ -31,7 +31,7 @@ class Performance:
                 self.replications.append(replication)
                 replication.printStats()
                 row = replication.getReplicationData()
-                row.insert(0,str(x+1))
+                row.insert(0, str(x+1))
                 writer.writerow(row)
 
     def getHeaders(self):
@@ -39,7 +39,7 @@ class Performance:
          'Inspector 1 Blocked %', 'Inspector 2 Blocked %', 'Buffer 1 Occupancy Average','Buffer 2 Occupancy Average', 'Buffer 3 Occupancy Average',
          'Buffer 4 Occupancy Average', 'Buffer 5 Occupancy Average']
 def main():
-    per = Performance(20)
+    per = Performance(1)
     per.run()
 
 
