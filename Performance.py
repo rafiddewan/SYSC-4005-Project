@@ -35,8 +35,8 @@ class Performance:
                 writer.writerow(row)
 
     def getHeaders(self):
-        return ['Replication #', 'Throughput', 'Workstation 1 Busy %', 'Workstation 2 Busy %', 'Workstation 3 Busy %',
-         'Inspector 1 Blocked %', 'Inspector 2 Blocked %', 'Buffer 1 Occupancy Average','Buffer 2 Occupancy Average', 'Buffer 3 Occupancy Average',
+        return ['Replication #', 'Throughput', 'Workstation 1 Busy Prob', 'Workstation 2 Busy Prob', 'Workstation 3 Busy Prob',
+         'Inspector 1 Blocked Prob', 'Inspector 2 Blocked Prob', 'Buffer 1 Occupancy Average','Buffer 2 Occupancy Average', 'Buffer 3 Occupancy Average',
          'Buffer 4 Occupancy Average', 'Buffer 5 Occupancy Average']
 def main():
     per = Performance(20)

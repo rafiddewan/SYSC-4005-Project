@@ -432,11 +432,11 @@ class Simulation:
         replication = Replication()
         totalProducts = 0
         for workstation in self.workstations:
-            probabilityWorkstationBusy = (workstation.getMinutesBusy() / self.steadyStateTime) * 100
+            probabilityWorkstationBusy = (workstation.getMinutesBusy() / self.steadyStateTime)
             replication.addWorkstationBusyProbability(workstation.getId(), probabilityWorkstationBusy)
             totalProducts += workstation.getNumProductsCreated()
         for inspector in self.inspectors:
-            probabilityInspectorBlocked = (inspector.getTimeBlocked() / self.steadyStateTime) * 100
+            probabilityInspectorBlocked = (inspector.getTimeBlocked() / self.steadyStateTime)
             replication.addInspectorBlockedProbability(inspector.getId(), probabilityInspectorBlocked)
         for buffer in self.buffers:
             avgBufferOccup = buffer.getCummulativeOcc() / self.steadyStateTime
