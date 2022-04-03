@@ -9,9 +9,6 @@ To run the original policy of the simulation you need to make sure that on Perfo
 
 ```IS_ROUND_ROBIN = False```
 
-To run the simulation you must run the following command:
-``` python3 Performance.py``` to generate the production run
-
 This will then generate the production run of the simulation in a CSV called ***Priority_Queue_Production_Run.csv***
 
 ## Running the alternative policy of the simulation
@@ -19,7 +16,8 @@ To run the alternative policy of the simulation you need to make sure that on Pe
 
 ```IS_ROUND_ROBIN = True```
 
-To run the simulation you must run the following command:
-``` python3 Performance.py``` to generate the production run
-
 This will then generate the production run of the simulation in a CSV called ***RoundRobin_Production_Run.csv***
+
+## Running Performance.py
+To run the Performance.py just run the following command:
+``` python Performance.py``` to generate the production run
