@@ -1,7 +1,7 @@
 # SYSC-4005-Project
 ## Authors 
 - Rafid Dewan
-- Aashan Narang
+- Aashna Narang
 - Nick Coutts
 
 ## Running the original policy of the simulation
